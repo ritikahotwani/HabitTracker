@@ -1,0 +1,160 @@
+//
+//  SignUpForm.swift
+//  HabitTracker
+//
+//  Created by Ritika Hotwani on 23/08/25.
+//
+
+import SwiftUI
+enum Field: Hashable {
+    case name, email, password, confirmPassword
+}
+struct SignUpForm: View {
+    @State private var userName: String = ""
+    @State private var userEmail: String = ""
+    @State private var userPassword: String = ""
+    @State private var confirmPassword: String = ""
+    @State private var showError = false
+    @State private var errorMessage: String = ""
+    @State private var isLoading = false
+    
+    @EnvironmentObject var viewModel: HabitTrackerViewModel
+    @EnvironmentObject var appState:AppState
+    
+    @FocusState private var focusedField: Field?
+    
+    var body: some View {
+        Form {
+            Section {
+                TextField("Full Name", text: $userName)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .name)
+                    .submitLabel(.next)
+                    .onAppear{
+                        focusedField = .name
+                    }
+                    .onSubmit { focusedField = .email }
+                
+            }
+            
+            Section {
+                TextField("Email", text: $userEmail)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.emailAddress)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .email)
+                    .submitLabel(.next)
+                    .onSubmit { focusedField = .password }
+            }
+            
+            Section {
+                PasswordField(text: $userPassword, placeholder: "Password")
+                    .focused($focusedField, equals: .password)
+                    .submitLabel(.next)
+                    .onSubmit { focusedField = .confirmPassword }
+                
+
+            } footer: {
+                Text("Must be at least 8 characters with uppercase and number")
+                    .font(.caption)
+            }
+            
+            Section {
+                PasswordField(text: $confirmPassword, placeholder: "Confirm Password")
+                    .focused($focusedField, equals: .confirmPassword)
+                    .submitLabel(.go)
+                    .onSubmit { signUp() }
+                
+                // Password match indicator
+                if !confirmPassword.isEmpty {
+                    HStack {
+                        Image(systemName: passwordsMatch ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundColor(passwordsMatch ? .green : .red)
+                        Text(passwordsMatch ? "Passwords match" : "Passwords don't match")
+                            .font(.caption)
+                            .foregroundColor(passwordsMatch ? .green : .red)
+                    }
+                }
+            }
+            
+            Button(action: signUp) {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Text("Create Account")
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(isFormInvalid || isLoading)
+            .listRowBackground(Color.clear)
+        }
+        .listSectionSpacing(10)
+        .alert("Sign Up Error", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    private var passwordsMatch: Bool {
+        !userPassword.isEmpty && userPassword == confirmPassword
+    }
+    
+    private var isFormInvalid: Bool {
+        userName.trimmingCharacters(in: .whitespaces).isEmpty ||
+        userEmail.trimmingCharacters(in: .whitespaces).isEmpty ||
+        userPassword.isEmpty ||
+        confirmPassword.isEmpty ||
+        !passwordsMatch
+    }
+    
+    private func signUp() {
+        let name = userName.trimmingCharacters(in: .whitespaces)
+        let email = userEmail.trimmingCharacters(in: .whitespaces)
+        
+        // Validate email
+        guard AuthenticationService.shared.isValidEmail(email) else {
+            errorMessage = "Please enter a valid email address"
+            showError = true
+            return
+        }
+        
+        // Validate password strength
+        if let error = AuthenticationService.shared.validatePasswordStrength(userPassword) {
+            errorMessage = error
+            showError = true
+            return
+        }
+        
+        // Check passwords match
+        guard userPassword == confirmPassword else {
+            errorMessage = "Passwords do not match"
+            showError = true
+            return
+        }
+        
+        isLoading = true
+        focusedField = nil // Dismiss keyboard
+        
+        // Hash password
+        let hashedPassword = AuthenticationService.shared.hashPassword(userPassword)
+        
+        // Simulate async operation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if viewModel.signUpUser(email: email, password: hashedPassword, name: name) {
+                appState.isLoggedIn = true
+            } else {
+                errorMessage = "This email is already registered"
+                showError = true
+            }
+            isLoading = false
+        }
+    }
+}
+
+#Preview {
+    SignUpForm()
+}
