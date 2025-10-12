@@ -93,6 +93,7 @@ struct SignInForm: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             if viewModel.signInUser(email: email, password: hashedPassword) {
                 appState.isLoggedIn = true
+                NotificationManager.shared.showSignInSuccessNotification(for: userEmail)
             } else {
                 errorMessage = "The email or password you entered is incorrect."
                 showError = true

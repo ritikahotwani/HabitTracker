@@ -13,6 +13,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if appState.isLoggedIn {
+                
                 HomeView()
             } else {
                 Onboarding()

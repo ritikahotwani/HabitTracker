@@ -14,7 +14,7 @@ struct HabitCheckBox: View {
     var body: some View {
         ForEach(dates, id: \.self) { date in
             Button(action: {
-                viewModel.toggleHabit(habit: habit, date: date)
+                viewModel.toggleHabitCompletion(habit: habit, date: date)
                 vibrate(style: .medium)
             }) {
                 let isCompleted = habit.completedDatesArray.contains(where: {

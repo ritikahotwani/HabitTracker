@@ -88,3 +88,9 @@ func calculateStreaks(from datesCompleted: [Date]) -> (currentStreak: Int, bestS
 
     return (currentStreak: todayStreak, bestStreak: bestStreak)
 }
+extension Calendar {
+    func isDate(_ date: Date, inCurrentWeekFor referenceDate: Date = Date()) -> Bool {
+        guard let weekInterval = self.dateInterval(of: .weekOfYear, for: referenceDate) else { return false }
+        return weekInterval.contains(date)
+    }
+}

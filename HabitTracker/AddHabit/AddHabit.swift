@@ -100,7 +100,7 @@ struct AddHabit: View {
                             viewModel.addHabit(name: habitName,
                                                priorityColor: colorData as NSObject,
                                                frequency: habitFrequency.rawValue,
-                                               note: habitNote, noOfDays: noOfDays) {
+                                               note: habitNote, noOfDays: noOfDays, isNotify: isNotify) {
                                 dismiss()
                             }
                         } else {

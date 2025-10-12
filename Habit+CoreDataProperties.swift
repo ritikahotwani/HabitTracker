@@ -21,4 +21,5 @@ extension Habit {
     @NSManaged public var noOfDays: NSNumber?
     @NSManaged public var progress: NSNumber?
     @NSManaged public var user: User?
+    @NSManaged public var isNotify: NSNumber?
 }

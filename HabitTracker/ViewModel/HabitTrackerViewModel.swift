@@ -4,25 +4,25 @@
 //
 //  Created by Ritika Hotwani on 24/08/25.
 //
-
 import Foundation
 import SwiftUI
 import CoreData
 
-class HabitTrackerViewModel:ObservableObject{
+class HabitTrackerViewModel: ObservableObject {
     
-    @Published var habits : [Habit] = []
+    @Published var habits: [Habit] = []
     @Published var currentUser: User?
     @Published var authError: String?
     
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
 
-
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
         restoreLoggedInUser()
     }
+    
+    // MARK: - User Management
     private func restoreLoggedInUser() {
         guard let idString = UserDefaults.standard.string(forKey: userDefaultsKey),
               let id = UUID(uuidString: idString) else { return }
@@ -38,7 +38,7 @@ class HabitTrackerViewModel:ObservableObject{
             }
         } catch {
             authError = "Failed to restore user: \(error.localizedDescription)"
-            print("Error restoring user: \(error.localizedDescription)")
+            print(error.localizedDescription)
         }
     }
     
@@ -53,7 +53,6 @@ class HabitTrackerViewModel:ObservableObject{
     }
     
     func signUpUser(email: String, password: String, name: String) -> Bool {
-        // Check if user already exists
         let checkRequest = User.fetchRequest()
         checkRequest.predicate = NSPredicate(format: "userEmail == %@", email)
         checkRequest.fetchLimit = 1
@@ -81,18 +80,6 @@ class HabitTrackerViewModel:ObservableObject{
         return false
     }
     
-//    func signUpUser(email:String, password:String,name:String) -> Bool{
-//        let user = User(context: context)
-//        user.userId = UUID()
-//        user.userEmail = email
-//        user.userPassword = password
-//        user.userName = name
-//        save()
-//        setLoggedInUser(user)
-//        currentUser = user
-//        return true
-//    }
-//    
     func signInUser(email: String, password: String) -> Bool {
         let request = User.fetchRequest()
         request.predicate = NSPredicate(format: "userEmail == %@ AND userPassword == %@", email, password)
@@ -108,42 +95,111 @@ class HabitTrackerViewModel:ObservableObject{
             }
         } catch {
             authError = "Sign in error: \(error.localizedDescription)"
-            print("Error signing in: \(error.localizedDescription)")
+            print(error.localizedDescription)
         }
         return false
     }
     
-    func signOut() -> Bool{
+    func signOut() -> Bool {
         currentUser = nil
         clearLoggedInUser()
         habits = []
         return true
     }
     
-    func addHabit(name: String,priorityColor: NSObject,frequency:String,note:String,noOfDays:Int, completion: (() -> Void)? = nil){
+    // MARK: - Habit CRUD + Notifications
+    func addHabit(name: String,
+                  priorityColor: NSObject,
+                  frequency: String,
+                  note: String,
+                  noOfDays: Int,
+                  isNotify: Bool,
+                  completion: (() -> Void)? = nil) {
+        
         guard let user = currentUser else {
             authError = "No user logged in"
-               print("No user logged in")
-               return
-           }
-           
+            return
+        }
+        
         let habit = Habit(context: context)
         habit.user = user
         habit.name = name
         habit.id = UUID()
-        habit.datesCompleted = [] as NSObject?
+        habit.datesCompleted = [] as NSObject
         habit.priorityColor = priorityColor
         habit.frequency = frequency
         habit.startDate = Date()
         habit.note = note
         habit.noOfDays = NSNumber(value: noOfDays)
+        habit.isNotify = NSNumber(value: isNotify)
         
         if saveContext() {
+            // Schedule or cancel notifications based on isNotify
+            if isNotify {
+                NotificationManager.shared.updateNotification(for: habit)
+            } else {
+                NotificationManager.shared.cancelReminder(for: habit)
+            }
             completion?()
         }
     }
     
-    func fetchHabits(){
+    func editHabit(habit: Habit,
+                   name: String,
+                   priorityColor: NSObject,
+                   frequency: String,
+                   note: String,
+                   noOfDays: Int,
+                   isNotify: Bool,
+                   completion: (() -> Void)? = nil) {
+        
+        habit.name = name
+        habit.priorityColor = priorityColor
+        habit.frequency = frequency
+        habit.note = note
+        habit.noOfDays = NSNumber(value: noOfDays)
+        habit.isNotify = NSNumber(value: isNotify)
+        
+        if saveContext() {
+            if isNotify {
+                NotificationManager.shared.updateNotification(for: habit)
+            } else {
+                NotificationManager.shared.cancelReminder(for: habit)
+            }
+            completion?()
+        }
+    }
+    
+    func deleteHabit(offsets: IndexSet) {
+        offsets.forEach { index in
+            let habit = habits[index]
+            // Cancel all notifications before deleting
+            NotificationManager.shared.cancelReminder(for: habit)
+            context.delete(habit)
+        }
+        saveContext()
+    }
+    
+    func toggleHabitCompletion(habit: Habit, date: Date) {
+        guard habit.id != nil else { return }
+        
+        var currentDates = habit.completedDatesArray
+        let calendar = Calendar.current
+        
+        if let existingIndex = currentDates.firstIndex(where: { calendar.isDate($0, inSameDayAs: date) }) {
+            currentDates.remove(at: existingIndex)
+        } else {
+            currentDates.append(date)
+        }
+        
+        habit.completedDatesArray = currentDates
+        
+        if saveContext() {
+            NotificationManager.shared.updateNotification(for: habit)
+        }
+    }
+    
+    func fetchHabits() {
         guard let user = currentUser else {
             habits = []
             return
@@ -157,50 +213,40 @@ class HabitTrackerViewModel:ObservableObject{
             habits = try context.fetch(request)
         } catch {
             authError = "Failed to fetch habits: \(error.localizedDescription)"
-            print("Error fetching habits: \(error.localizedDescription)")
+            print(error.localizedDescription)
             habits = []
         }
     }
     
-    func deleteHabit(offsets: IndexSet){
-        offsets.forEach { index in
-            context.delete(habits[index])
+    // MARK: - Weekly Reset
+    func resetWeeklyProgressIfNeeded() {
+        for habit in habits {
+            if let lastWeekStart = habit.weeklyProgress?.start {
+                if !Calendar.current.isDate(lastWeekStart, inCurrentWeekFor: Date()) {
+                    habit.datesCompleted = [] as NSObject
+                    if saveContext() {
+                        NotificationManager.shared.updateNotification(for: habit)
+                        print("🔁 Weekly reset for \(habit.name ?? "")")
+                    }
+                }
+            } else {
+                NotificationManager.shared.updateNotification(for: habit)
+            }
         }
-        saveContext()
     }
     
-    func toggleHabit(habit: Habit, date: Date) {
-        guard habit.id != nil else { return }
-        
-        var currentDates = habit.completedDatesArray
-        let calendar = Calendar.current
-        
-        if let existingIndex = currentDates.firstIndex(where: {
-            calendar.isDate($0, inSameDayAs: date)
-        }) {
-            currentDates.remove(at: existingIndex)
-        } else {
-            currentDates.append(date)
-        }
-        
-        habit.completedDatesArray = currentDates
-        saveContext()
-    }
-    
+    // MARK: - Private Save
     @discardableResult
     private func saveContext() -> Bool {
         guard context.hasChanges else { return true }
-        
         do {
             try context.save()
             fetchHabits()
             return true
         } catch {
             authError = "Failed to save: \(error.localizedDescription)"
-            print("Error saving context: \(error.localizedDescription)")
+            print(error.localizedDescription)
             return false
         }
     }
 }
-
-

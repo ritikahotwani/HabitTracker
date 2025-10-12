@@ -42,6 +42,8 @@
 		9E528F552E8C2E0C00FCCE91 /* HabitList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F542E8C2E0C00FCCE91 /* HabitList.swift */; };
 		9E528F572E8C2E2700FCCE91 /* HabitName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F562E8C2E2700FCCE91 /* HabitName.swift */; };
 		9E528F592E8C2E3A00FCCE91 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */; };
+		9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C912E9AB81100487B8D /* NotificationManager.swift */; };
+		9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C942E9ABF7700487B8D /* AppDelegate.swift */; };
 		9EF0C8552E8BF8F400B01A3C /* HabitTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */; };
 		9EF0C8572E8BF8F400B01A3C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8562E8BF8F400B01A3C /* ContentView.swift */; };
 		9EF0C8592E8BF8F500B01A3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EF0C8582E8BF8F500B01A3C /* Assets.xcassets */; };
@@ -117,6 +119,9 @@
 		9E528F542E8C2E0C00FCCE91 /* HabitList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitList.swift; sourceTree = "<group>"; };
 		9E528F562E8C2E2700FCCE91 /* HabitName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitName.swift; sourceTree = "<group>"; };
 		9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRow.swift; sourceTree = "<group>"; };
+		9E645C912E9AB81100487B8D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9EF0C8512E8BF8F400B01A3C /* HabitTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitTrackerApp.swift; sourceTree = "<group>"; };
 		9EF0C8562E8BF8F400B01A3C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -260,6 +265,14 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		9E645C902E9AAF7000487B8D /* LocalNotification */ = {
+			isa = PBXGroup;
+			children = (
+				9E645C912E9AB81100487B8D /* NotificationManager.swift */,
+			);
+			path = LocalNotification;
+			sourceTree = "<group>";
+		};
 		9EF0C8482E8BF8F400B01A3C = {
 			isa = PBXGroup;
 			children = (
@@ -283,10 +296,13 @@
 		9EF0C8532E8BF8F400B01A3C /* HabitTracker */ = {
 			isa = PBXGroup;
 			children = (
+				9E645C932E9ABEAC00487B8D /* Info.plist */,
+				9E645C902E9AAF7000487B8D /* LocalNotification */,
 				9E528F0B2E8BFE2F00FCCE91 /* Core Data */,
 				9E528F2C2E8C01A200FCCE91 /* Onboarding */,
 				9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */,
 				9E528F472E8C22BD00FCCE91 /* Test.swift */,
+				9E645C942E9ABF7700487B8D /* AppDelegate.swift */,
 				9EF0C8562E8BF8F400B01A3C /* ContentView.swift */,
 				9E528F4F2E8C2D8300FCCE91 /* Home */,
 				9EF0C8962E8BFAC900B01A3C /* AppState.swift */,
@@ -471,8 +487,10 @@
 				9E528F342E8C14C500FCCE91 /* OnboardingSegmentController.swift in Sources */,
 				9E528F112E8BFFA000FCCE91 /* DateBar.swift in Sources */,
 				9E528F212E8C009200FCCE91 /* AddHabit.swift in Sources */,
+				9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */,
 				9EF0C88C2E8BFA4E00B01A3C /* HabitTrackerViewModel.swift in Sources */,
 				9E528F192E8C000100FCCE91 /* MonthlyProgressBar.swift in Sources */,
+				9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */,
 				9E528F252E8C013000FCCE91 /* TitleMonth.swift in Sources */,
 				9EF0C8612E8BF8F500B01A3C /* HabitTracker.xcdatamodeld in Sources */,
 				9E528F322E8C01C900FCCE91 /* SignInForm.swift in Sources */,
@@ -682,6 +700,7 @@
 				DEVELOPMENT_TEAM = Y293576RRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HabitTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -711,6 +730,7 @@
 				DEVELOPMENT_TEAM = Y293576RRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HabitTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
