@@ -15,9 +15,10 @@ struct HabitTrackerApp: App {
 
     @StateObject var appState = AppState()
     @StateObject var viewModel = HabitTrackerViewModel()
-
     @Environment(\.scenePhase) private var scenePhase
+
     let viewContext = PersistenceController.shared.container.viewContext
+    @State private var showSplash = true
 
     init() {
         NotificationManager.shared.requestPermission()
@@ -25,10 +26,26 @@ struct HabitTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(appState)
-                .environmentObject(viewModel)
-                .environment(\.managedObjectContext, viewContext)
+            ZStack {
+                if showSplash {
+                    SplashScreen()
+                        .transition(.opacity)
+                } else {
+                    ContentView()
+                        .environmentObject(appState)
+                        .environmentObject(viewModel)
+                        .environment(\.managedObjectContext, viewContext)
+                        .transition(.opacity)
+                }
+            }
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation(.easeInOut(duration: 0.6)) {
+                        showSplash = false
+                    }
+                }
+            }
+            .animation(.easeInOut(duration: 0.5), value: showSplash)
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
@@ -37,6 +54,9 @@ struct HabitTrackerApp: App {
             }
         }
     }
+
+
+
 
     // MARK: - Fetch All Habits
     private func fetchAllHabits(context: NSManagedObjectContext) -> [Habit] {

@@ -42,6 +42,8 @@
 		9E528F552E8C2E0C00FCCE91 /* HabitList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F542E8C2E0C00FCCE91 /* HabitList.swift */; };
 		9E528F572E8C2E2700FCCE91 /* HabitName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F562E8C2E2700FCCE91 /* HabitName.swift */; };
 		9E528F592E8C2E3A00FCCE91 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */; };
+		9E62877D2E9D775400978F12 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E62877C2E9D775400978F12 /* SplashScreen.swift */; };
+		9E62877F2E9D7CF500978F12 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9E62877E2E9D7CF500978F12 /* Launch Screen.storyboard */; };
 		9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C912E9AB81100487B8D /* NotificationManager.swift */; };
 		9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C942E9ABF7700487B8D /* AppDelegate.swift */; };
 		9EF0C8552E8BF8F400B01A3C /* HabitTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */; };
@@ -119,6 +121,8 @@
 		9E528F542E8C2E0C00FCCE91 /* HabitList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitList.swift; sourceTree = "<group>"; };
 		9E528F562E8C2E2700FCCE91 /* HabitName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitName.swift; sourceTree = "<group>"; };
 		9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRow.swift; sourceTree = "<group>"; };
+		9E62877C2E9D775400978F12 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		9E62877E2E9D7CF500978F12 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9E645C912E9AB81100487B8D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -304,6 +308,7 @@
 				9E528F472E8C22BD00FCCE91 /* Test.swift */,
 				9E645C942E9ABF7700487B8D /* AppDelegate.swift */,
 				9EF0C8562E8BF8F400B01A3C /* ContentView.swift */,
+				9E62877C2E9D775400978F12 /* SplashScreen.swift */,
 				9E528F4F2E8C2D8300FCCE91 /* Home */,
 				9EF0C8962E8BFAC900B01A3C /* AppState.swift */,
 				9E528F1F2E8C007700FCCE91 /* AddHabit */,
@@ -313,6 +318,7 @@
 				9EF0C8582E8BF8F500B01A3C /* Assets.xcassets */,
 				9EF0C85A2E8BF8F500B01A3C /* Preview Content */,
 				9EF0C88D2E8BFA7B00B01A3C /* ViewModel */,
+				9E62877E2E9D7CF500978F12 /* Launch Screen.storyboard */,
 			);
 			path = HabitTracker;
 			sourceTree = "<group>";
@@ -456,6 +462,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E62877F2E9D7CF500978F12 /* Launch Screen.storyboard in Resources */,
 				9EF0C85C2E8BF8F500B01A3C /* Preview Assets.xcassets in Resources */,
 				9EF0C8592E8BF8F500B01A3C /* Assets.xcassets in Resources */,
 			);
@@ -521,6 +528,7 @@
 				9E528F232E8C010000FCCE91 /* ColorPickerView.swift in Sources */,
 				9E528F272E8C014C00FCCE91 /* CloseStreak.swift in Sources */,
 				9E528F0D2E8BFF5C00FCCE91 /* ButtonViewModifier.swift in Sources */,
+				9E62877D2E9D775400978F12 /* SplashScreen.swift in Sources */,
 				9E528F0F2E8BFF8A00FCCE91 /* Helpers.swift in Sources */,
 				9EF0C8972E8BFAC900B01A3C /* AppState.swift in Sources */,
 				9EF0C8992E8BFB3800B01A3C /* HabitDetails.swift in Sources */,
