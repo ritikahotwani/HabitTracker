@@ -237,7 +237,7 @@ class HabitTrackerViewModel: ObservableObject {
     
     // MARK: - Private Save
     @discardableResult
-    private func saveContext() -> Bool {
+     func saveContext() -> Bool {
         guard context.hasChanges else { return true }
         do {
             try context.save()

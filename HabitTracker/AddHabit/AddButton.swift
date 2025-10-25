@@ -8,15 +8,22 @@ import SwiftUI
 
 struct AddButton: View {
     @EnvironmentObject var viewModel: HabitTrackerViewModel
-
+    @State var showAddHabit: Bool = false
     var body: some View {
-           NavigationLink(destination: AddHabit()) {
-               Image(systemName: "plus")
-                   .font(.title2)
-                   .foregroundColor(.gray)
-                   .padding(.trailing, 10)
-           }
+        Button(action: {
+         showAddHabit = true
+        }) {
+            Image(systemName: "plus")
+                .font(.title2)
+                .foregroundColor(.gray)
+                .padding(.trailing, 10)
+        }
+        .sheet(isPresented: $showAddHabit){
+            AddHabit()
+        }
+       
        }
+        
 }
 
 #Preview {
