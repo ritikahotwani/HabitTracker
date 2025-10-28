@@ -9,15 +9,24 @@ import SwiftUI
 struct AddButton: View {
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @State var showAddHabit: Bool = false
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         Button(action: {
          showAddHabit = true
         }) {
             Image(systemName: "plus")
-                .font(.title2)
+                .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.gray)
-                .padding(.trailing, 10)
+                .frame(width: 30, height: 30)
+                .padding(8)
+                .background(
+                    Circle()
+                        .fill(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white.opacity(0.7))
+                        .shadow(radius: 3)
+                )
         }
+        .padding(.horizontal, 4)
         .sheet(isPresented: $showAddHabit){
             AddHabit()
         }

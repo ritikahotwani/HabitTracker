@@ -6,25 +6,26 @@
 //
 import SwiftUI
 
+import SwiftUI
+
 struct HeaderView: View {
 
-    
+
     var body: some View {
-        NavigationStack {
-            HStack {
-                Text("Habit Tracker")
-                    .font(.system(size: 30, weight: .bold, design: .default))
-                Spacer()
-                
-                AddButton()
-                
-                LogOutButton()
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal)
+        HStack {
+            Text("Habit Tracker")
+                .font(.system(size: 30, weight: .bold, design: .default))
+
+            Spacer()
+            ThemeToggleButton()
+            AddButton()
+            LogOutButton()
         }
+        .padding(.vertical, 10)
+        .padding(.horizontal)
     }
 }
+
 
 
 #Preview {

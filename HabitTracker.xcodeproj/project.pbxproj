@@ -42,6 +42,7 @@
 		9E528F552E8C2E0C00FCCE91 /* HabitList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F542E8C2E0C00FCCE91 /* HabitList.swift */; };
 		9E528F572E8C2E2700FCCE91 /* HabitName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F562E8C2E2700FCCE91 /* HabitName.swift */; };
 		9E528F592E8C2E3A00FCCE91 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */; };
+		9E591ECC2EB1229500F4CAF0 /* ThemeToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E591ECB2EB1229500F4CAF0 /* ThemeToggleButton.swift */; };
 		9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C912E9AB81100487B8D /* NotificationManager.swift */; };
 		9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C942E9ABF7700487B8D /* AppDelegate.swift */; };
 		9EBEFCDC2EACF14F00F7D4DA /* EditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */; };
@@ -120,6 +121,7 @@
 		9E528F542E8C2E0C00FCCE91 /* HabitList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitList.swift; sourceTree = "<group>"; };
 		9E528F562E8C2E2700FCCE91 /* HabitName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitName.swift; sourceTree = "<group>"; };
 		9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRow.swift; sourceTree = "<group>"; };
+		9E591ECB2EB1229500F4CAF0 /* ThemeToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeToggleButton.swift; sourceTree = "<group>"; };
 		9E645C912E9AB81100487B8D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				9E528F542E8C2E0C00FCCE91 /* HabitList.swift */,
 				9E528F522E8C2DED00FCCE91 /* HeaderView.swift */,
 				9E528F502E8C2DD300FCCE91 /* LogOutButton.swift */,
+				9E591ECB2EB1229500F4CAF0 /* ThemeToggleButton.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -490,6 +493,7 @@
 				9E528F342E8C14C500FCCE91 /* OnboardingSegmentController.swift in Sources */,
 				9E528F112E8BFFA000FCCE91 /* DateBar.swift in Sources */,
 				9E528F212E8C009200FCCE91 /* AddHabit.swift in Sources */,
+				9E591ECC2EB1229500F4CAF0 /* ThemeToggleButton.swift in Sources */,
 				9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */,
 				9EF0C88C2E8BFA4E00B01A3C /* HabitTrackerViewModel.swift in Sources */,
 				9E528F192E8C000100FCCE91 /* MonthlyProgressBar.swift in Sources */,
