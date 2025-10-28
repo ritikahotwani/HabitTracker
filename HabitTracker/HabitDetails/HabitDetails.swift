@@ -12,10 +12,12 @@ struct HabitDetails: View {
     @ObservedObject var habit: Habit
     @Environment(\.dismiss) var dismiss
     
-    @State var currentStreak: Int = 0
-    @State var bestStreak: Int = 0
+    @State private var currentStreak: Int = 0
+    @State private var bestStreak: Int = 0
     @State private var showEditHabit = false
     @State private var refreshToggle = false
+    @State private var lastKnownName = ""
+    @State private var lastKnownColor: Color = .primary
     
     private var completedDates: [Date] {
         habit.completedDatesArray
@@ -23,11 +25,9 @@ struct HabitDetails: View {
     
     init(habit: Habit) {
         self.habit = habit
-        //        self.completedDates = habit.completedDatesArray
     }
     
     var body: some View {
-        
         ScrollView {
             VStack(spacing: 16) {
                 statsCardsSection
@@ -47,9 +47,8 @@ struct HabitDetails: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden(true)
-        .id(refreshToggle)
-        
-        .toolbar{
+        .id(refreshToggle) // 🔁 Forces view refresh when toggled
+        .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 backButton
             }
@@ -65,18 +64,22 @@ struct HabitDetails: View {
                 }
             }
         }
-        .sheet(isPresented: $showEditHabit,onDismiss:{
-            
-            refreshToggle.toggle()
+        .sheet(isPresented: $showEditHabit, onDismiss: {
+            handleHabitChange()
         }) {
             EditHabitView(habit: habit)
         }
         .task {
             calculateStreaks()
+            saveLastKnownState()
         }
-        
-        
+        .onAppear {
+            saveLastKnownState()
+        }
     }
+    
+    // MARK: - UI Sections
+    
     private var statsCardsSection: some View {
         HStack(spacing: 12) {
             CountCard(
@@ -107,7 +110,7 @@ struct HabitDetails: View {
         }
     }
     
-    // MARK: - Computed Properties
+    // MARK: - Computed
     
     private var shouldShowCloseStreakView: Bool {
         bestStreak > 0 && (bestStreak - 7)...(bestStreak - 1) ~= currentStreak
@@ -119,6 +122,20 @@ struct HabitDetails: View {
         let streaks = HabitTracker.calculateStreaks(from: completedDates)
         currentStreak = streaks.currentStreak
         bestStreak = streaks.bestStreak
+    }
+    
+    private func saveLastKnownState() {
+        lastKnownName = habit.name ?? ""
+        lastKnownColor = habit.habitColor
+    }
+    
+    private func handleHabitChange() {
+        // Compare if habit details actually changed
+        if habit.name != lastKnownName || habit.habitColor != lastKnownColor {
+            calculateStreaks()
+            refreshToggle.toggle() 
+            saveLastKnownState()
+        }
     }
 }
 

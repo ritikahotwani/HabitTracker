@@ -18,26 +18,26 @@ struct AddHabit: View {
     @State private var selectedColor: Color = .red
     
     var body: some View {
-        
-           
-            Form{
+        NavigationStack {
             
-                    
-                    Section{
-                        TextField("Enter Habit Name", text: $habitName)
-                            .focused($nameFieldIsFocused)
-                            
-                    }
+            Form{
                 
-//                Section{
-//                    Picker("Frequency", selection: $habitFrequency){
-//                        ForEach(HabitFrequency.allCases){ frequency in
-//                            Text(frequency.rawValue)
-//                        }
-//                    }
-//                }
-//                .frame(height: 35)
-//
+                
+                Section{
+                    TextField("Enter Habit Name", text: $habitName)
+                        .focused($nameFieldIsFocused)
+                    
+                }
+                
+                //                Section{
+                //                    Picker("Frequency", selection: $habitFrequency){
+                //                        ForEach(HabitFrequency.allCases){ frequency in
+                //                            Text(frequency.rawValue)
+                //                        }
+                //                    }
+                //                }
+                //                .frame(height: 35)
+                //
                 Section {
                     Picker("Number of Days", selection: $noOfDays) {
                         ForEach(1...7, id: \.self) { i in
@@ -45,7 +45,7 @@ struct AddHabit: View {
                         }
                     }
                 }
-
+                
                 
                 Section{
                     Toggle("Remind me", isOn: $isNotify)
@@ -62,41 +62,41 @@ struct AddHabit: View {
                         TextEditor(text: $habitNote)
                             .frame(minHeight: 80)
                     }
-
+                    
                 }
                 
                 
                 Section{
                     ColorPickerView(selectedColor: $selectedColor)
-//                        .listRowBackground(Color.clear)
+                    //                        .listRowBackground(Color.clear)
                 }
                 
             }
             .listSectionSpacing(10)
-        
-        .onAppear{
-            nameFieldIsFocused = true
-        }
-        
-        .navigationBarBackButtonHidden(true)
-        .navigationTitle("")
-        .toolbar{
-            ToolbarItem(placement: .topBarLeading){
-                Button(action: {
-                    dismiss()
-                }){
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.black)
+            
+            .onAppear{
+                nameFieldIsFocused = true
+            }
+            
+            .navigationBarBackButtonHidden(true)
+            .navigationTitle("")
+            .toolbar{
+                ToolbarItem(placement: .topBarLeading){
+                    Button(action: {
+                        dismiss()
+                    }){
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.black)
+                    }
                 }
-            }
-            ToolbarItem(placement: .principal){
-                Text("Create Habit")
-                    .font(.headline)
-            }
-            ToolbarItem(placement: .topBarTrailing){
-                Button("Save"){
-                    if let colorData = selectedColor.toData() {
-                        vibrate(style: .light)
+                ToolbarItem(placement: .principal){
+                    Text("Create Habit")
+                        .font(.headline)
+                }
+                ToolbarItem(placement: .topBarTrailing){
+                    Button("Save"){
+                        if let colorData = selectedColor.toData() {
+                            vibrate(style: .light)
                             viewModel.addHabit(name: habitName,
                                                priorityColor: colorData as NSObject,
                                                frequency: habitFrequency.rawValue,
@@ -105,14 +105,14 @@ struct AddHabit: View {
                             }
                         } else {
                             print("error converting color to data")
-                            }
-                }.disabled(habitName.trimmingCharacters(in: .whitespaces).isEmpty)
-
+                        }
+                    }.disabled(habitName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    
                     
                 }
             }
         }
-        
+    }
     }
 
 
