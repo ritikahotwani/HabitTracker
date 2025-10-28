@@ -44,6 +44,7 @@
 		9E528F592E8C2E3A00FCCE91 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F582E8C2E3A00FCCE91 /* HabitRow.swift */; };
 		9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C912E9AB81100487B8D /* NotificationManager.swift */; };
 		9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C942E9ABF7700487B8D /* AppDelegate.swift */; };
+		9EBEFCDC2EACF14F00F7D4DA /* EditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */; };
 		9EF0C8552E8BF8F400B01A3C /* HabitTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */; };
 		9EF0C8572E8BF8F400B01A3C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8562E8BF8F400B01A3C /* ContentView.swift */; };
 		9EF0C8592E8BF8F500B01A3C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9EF0C8582E8BF8F500B01A3C /* Assets.xcassets */; };
@@ -122,6 +123,7 @@
 		9E645C912E9AB81100487B8D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHabitView.swift; sourceTree = "<group>"; };
 		9EF0C8512E8BF8F400B01A3C /* HabitTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitTrackerApp.swift; sourceTree = "<group>"; };
 		9EF0C8562E8BF8F400B01A3C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 				9E528F472E8C22BD00FCCE91 /* Test.swift */,
 				9E645C942E9ABF7700487B8D /* AppDelegate.swift */,
 				9EF0C8562E8BF8F400B01A3C /* ContentView.swift */,
+				9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */,
 				9E528F4F2E8C2D8300FCCE91 /* Home */,
 				9EF0C8962E8BFAC900B01A3C /* AppState.swift */,
 				9E528F1F2E8C007700FCCE91 /* AddHabit */,
@@ -534,6 +537,7 @@
 				9E528F3C2E8C156900FCCE91 /* DateHelpers.swift in Sources */,
 				9E528F152E8BFFC100FCCE91 /* ProgressLineChart.swift in Sources */,
 				9EF0C88A2E8BF9FB00B01A3C /* User+CoreDataProperties.swift in Sources */,
+				9EBEFCDC2EACF14F00F7D4DA /* EditHabitView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

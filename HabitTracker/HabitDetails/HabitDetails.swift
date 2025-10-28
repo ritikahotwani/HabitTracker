@@ -12,51 +12,74 @@ struct HabitDetails: View {
     @ObservedObject var habit: Habit
     @Environment(\.dismiss) var dismiss
     
-    @State var currentStreak: Int = 0
-    @State var bestStreak: Int = 0
+    @State private var currentStreak: Int = 0
+    @State private var bestStreak: Int = 0
+    @State private var showEditHabit = false
+    @State private var refreshToggle = false
+    @State private var lastKnownName = ""
+    @State private var lastKnownColor: Color = .primary
     
-    private let completedDates: [Date]
+    private var completedDates: [Date] {
+        habit.completedDatesArray
+    }
     
     init(habit: Habit) {
         self.habit = habit
-        self.completedDates = habit.completedDatesArray
     }
     
     var body: some View {
-        
-            ScrollView {
-                VStack(spacing: 16) {
-                    statsCardsSection
-                    
-                    if shouldShowCloseStreakView {
-                        CloseStreakView(bestStreak: bestStreak, currentStreak: currentStreak)
-                            .padding(.horizontal)
-                    }
-                    
-                    CalendarHeatMap(habit: habit)
-                    MonthlyProgress(habit: habit)
-                    WeeklyProgress(habit: habit)
-                    HabitStartView(habit: habit)
-                        .padding(.bottom)
+        ScrollView {
+            VStack(spacing: 16) {
+                statsCardsSection
+                
+                if shouldShowCloseStreakView {
+                    CloseStreakView(bestStreak: bestStreak, currentStreak: currentStreak)
+                        .padding(.horizontal)
                 }
-                .padding(.top, 8)
+                
+                CalendarHeatMap(habit: habit)
+                MonthlyProgress(habit: habit)
+                WeeklyProgress(habit: habit)
+                HabitStartView(habit: habit)
+                    .padding(.bottom)
             }
-            .ignoresSafeArea(edges: .bottom)
-            .navigationBarBackButtonHidden(true)
-        
-        
-        .toolbar{
+            .padding(.top, 8)
+        }
+        .ignoresSafeArea(edges: .bottom)
+        .navigationBarBackButtonHidden(true)
+        .id(refreshToggle) // 🔁 Forces view refresh when toggled
+        .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 backButton
             }
             ToolbarItem(placement: .principal) {
                 HabitHeaderView(habit: habit)
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    showEditHabit = true
+                }) {
+                    Image(systemName: "square.and.pencil")
+                        .imageScale(.large)
+                }
+            }
+        }
+        .sheet(isPresented: $showEditHabit, onDismiss: {
+            handleHabitChange()
+        }) {
+            EditHabitView(habit: habit)
         }
         .task {
             calculateStreaks()
+            saveLastKnownState()
+        }
+        .onAppear {
+            saveLastKnownState()
         }
     }
+    
+    // MARK: - UI Sections
+    
     private var statsCardsSection: some View {
         HStack(spacing: 12) {
             CountCard(
@@ -87,7 +110,7 @@ struct HabitDetails: View {
         }
     }
     
-    // MARK: - Computed Properties
+    // MARK: - Computed
     
     private var shouldShowCloseStreakView: Bool {
         bestStreak > 0 && (bestStreak - 7)...(bestStreak - 1) ~= currentStreak
@@ -100,54 +123,26 @@ struct HabitDetails: View {
         currentStreak = streaks.currentStreak
         bestStreak = streaks.bestStreak
     }
+    
+    private func saveLastKnownState() {
+        lastKnownName = habit.name ?? ""
+        lastKnownColor = habit.habitColor
+    }
+    
+    private func handleHabitChange() {
+        // Compare if habit details actually changed
+        if habit.name != lastKnownName || habit.habitColor != lastKnownColor {
+            calculateStreaks()
+            refreshToggle.toggle() 
+            saveLastKnownState()
+        }
+    }
 }
-
 
 #Preview {
     let testHabit = Habit(context: PersistenceController.shared.container.viewContext)
     testHabit.name = "Ritika"
-    
-    let calendar = Calendar.current
-    let today = Date()
-    testHabit.startDate = calendar.date(byAdding: .day, value: -7, to: today)!
-    testHabit.completedDatesArray  = [
-        calendar.date(byAdding: .day, value: -7, to: today)!, // 7 days ago
-        calendar.date(byAdding: .day, value: -6, to: today)!,
-        calendar.date(byAdding: .day, value: -5, to: today)!,
-        calendar.date(byAdding: .day, value: -3, to: today)!,
-        calendar.date(byAdding: .day, value: -1, to: today)!,
-        today,
-        
-        calendar.date(byAdding: .day, value: -14, to: today)!, // 2 weeks ago
-        calendar.date(byAdding: .day, value: -13, to: today)!,
-        calendar.date(byAdding: .day, value: -11, to: today)!,
-        
-        calendar.date(byAdding: .day, value: -20, to: today)!, // 3 weeks ago
-        calendar.date(byAdding: .day, value: -19, to: today)!,
-        
-        calendar.date(byAdding: .day, value: -28, to: today)!,
-        
-        calendar.date(byAdding: .day, value: -56, to: today)!,
-        
-        calendar.date(byAdding: .day, value: -32, to: today)!,
-        calendar.date(byAdding: .day, value: -100, to: today)!
-        // 4 weeks ago
-    ]
-    
-    return HabitDetails(habit: testHabit)
-}
-
-
-
-
-
-
-
-
-#Preview {
-    let testHabit = Habit(context: PersistenceController.shared.container.viewContext)
-    testHabit.name = "Ritika"
-  return  HabitHeaderView(habit: testHabit)
+    return  HabitHeaderView(habit: testHabit)
 }
 
 
