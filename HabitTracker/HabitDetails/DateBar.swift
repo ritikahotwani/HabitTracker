@@ -29,8 +29,9 @@ struct DateBar: View {
                 .frame(maxWidth: 40)
             }
         }
-        .padding(.bottom, 10)
+        .padding()
         .listRowInsets(EdgeInsets())
+        .listRowBackground(Color(.systemGray6))
     }
 }
 

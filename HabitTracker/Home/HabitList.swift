@@ -13,15 +13,20 @@ struct HabitList: View {
     
     var body: some View {
         
+        DateBar(dates: $dates)
         
         List {
             Section{
-            DateBar(dates: $dates)
+               
                 HabitRow(dates: $dates)
-            } .padding(2)
+            }
+            
+//            .listRowBackground(Color(.systemGray6))
             
         }
-       
+        .listStyle(.plain)
+        
+        
         .scrollContentBackground(.hidden)
         
         .listSectionSpacing(0)

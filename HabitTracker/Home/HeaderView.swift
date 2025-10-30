@@ -14,7 +14,12 @@ struct HeaderView: View {
     var body: some View {
         HStack {
             Text("Habit Tracker")
-                .font(.system(size: 30, weight: .bold, design: .default))
+                .font(.system(size: 30, weight: .bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .allowsTightening(true)
+
+
 
             Spacer()
             ThemeToggleButton()

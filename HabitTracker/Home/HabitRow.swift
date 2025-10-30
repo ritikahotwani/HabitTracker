@@ -22,7 +22,7 @@ struct HabitRow: View {
                 Spacer(minLength: 4)
                 HabitCheckBox(habit: habit, dates: $dates)
             }
-            .padding(.vertical, 4)
+            .padding()
             .listRowInsets(EdgeInsets())
         }
         
