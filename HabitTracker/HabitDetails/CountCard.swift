@@ -12,28 +12,54 @@ struct CountCard: View {
     let heading: String
     let count: Int
     
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
-        VStack(spacing: 8) {
-            Text(heading)
-                .font(.caption)
-                .lineLimit(1)
+        VStack(spacing: 10) {
+            Text(heading.uppercased())
+                .font(.caption2)
+                .fontWeight(.medium)
+                .kerning(1)
                 .foregroundColor(.secondary)
-            
+
             Text("\(count)")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.primary)
+                .font(.system(size: 34, weight: .semibold, design: .rounded))
+                .foregroundColor(colorScheme == .dark ? .white : .black)
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 100)
-        .background(Color.white)
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(habit.habitColor, lineWidth: 2)
+        .frame(maxWidth: .infinity, minHeight: 120)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(cardBackground)
+                .shadow(color: shadowColor, radius: 12, x: 0, y: 6)
         )
-        .shadow(color: habit.habitColor.opacity(0.2), radius: 4, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(habit.habitColor.opacity(0.25), lineWidth: 1)
+        )
+        .overlay(alignment: .topTrailing) {
+            Circle()
+                .fill(habit.habitColor.opacity(0.15))
+                .frame(width: 10, height: 10)
+                .padding(10)
+        }
+        .padding(.horizontal, 4)
+        .animation(.spring(duration: 0.25), value: count)
+    }
+    
+    private var cardBackground: Color {
+        colorScheme == .dark
+        ? Color(.secondarySystemBackground).opacity(0.6)
+        : Color(.systemBackground)
+    }
+    
+    private var shadowColor: Color {
+        colorScheme == .dark
+        ? Color.black.opacity(0.3)
+        : Color.black.opacity(0.06)
     }
 }
+
 
 //#Preview {
 //    let testHabit = Habit(context: PersistenceController.shared.container.viewContext)
