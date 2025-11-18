@@ -15,7 +15,7 @@
     </entity>
     <entity name="User" representedClassName="User" syncable="YES">
         <attribute name="userEmail" optional="YES" attributeType="String"/>
-        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userId" optional="YES" attributeType="String"/>
         <attribute name="userName" optional="YES" attributeType="String"/>
         <attribute name="userPassword" optional="YES" attributeType="String"/>
         <relationship name="habits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Habit" inverseName="user" inverseEntity="Habit"/>

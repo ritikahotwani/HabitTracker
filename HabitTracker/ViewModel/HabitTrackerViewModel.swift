@@ -7,7 +7,7 @@
 import Foundation
 import SwiftUI
 import CoreData
-
+import FirebaseAuth
 class HabitTrackerViewModel: ObservableObject {
     
     @Published var habits: [Habit] = []
@@ -17,95 +17,145 @@ class HabitTrackerViewModel: ObservableObject {
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
 
+    // MARK: - Init
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
         restoreLoggedInUser()
     }
-    
-    // MARK: - User Management
+
+    // MARK: - Restore User
     private func restoreLoggedInUser() {
-        guard let idString = UserDefaults.standard.string(forKey: userDefaultsKey),
-              let id = UUID(uuidString: idString) else { return }
-        
+        guard let uid = UserDefaults.standard.string(forKey: userDefaultsKey) else { return }
+
         let request = User.fetchRequest()
-        request.predicate = NSPredicate(format: "userId == %@", id as CVarArg)
+        request.predicate = NSPredicate(format: "userId == %@", uid)
         request.fetchLimit = 1
-        
-        do {
-            if let user = try context.fetch(request).first {
-                currentUser = user
-                fetchHabits()
-            }
-        } catch {
-            authError = "Failed to restore user: \(error.localizedDescription)"
-            print(error.localizedDescription)
+
+        if let user = try? context.fetch(request).first {
+            currentUser = user
+            fetchHabits()
         }
     }
-    
+
+    // MARK: - Set User
     func setLoggedInUser(_ user: User) {
         currentUser = user
-        UserDefaults.standard.set(user.userId?.uuidString, forKey: userDefaultsKey)
+        if let uid = user.userId {
+            UserDefaults.standard.set(uid, forKey: userDefaultsKey)
+        }
     }
 
+    // MARK: - Clear User
     func clearLoggedInUser() {
         currentUser = nil
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
     }
-    
-    func signUpUser(email: String, password: String, name: String) -> Bool {
-        let checkRequest = User.fetchRequest()
-        checkRequest.predicate = NSPredicate(format: "userEmail == %@", email)
-        checkRequest.fetchLimit = 1
-        
-        do {
-            if try context.fetch(checkRequest).first != nil {
-                authError = "User with this email already exists"
-                return false
+
+    // MARK: - Sign Up
+    func signUpUser(email: String, password: String, name: String, completion: @escaping (Bool) -> Void) {
+
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            
+            if let error = error {
+                self.authError = error.localizedDescription
+                completion(false)
+                return
             }
+            
+            guard let firebaseUser = result?.user else {
+                self.authError = "User creation failed"
+                completion(false)
+                return
+            }
+            
+            // Save displayName
+            let change = firebaseUser.createProfileChangeRequest()
+            change.displayName = name
+            change.commitChanges(completion: nil)
+
+            // Save to Core Data
+            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+
+            // Fetch local user & set logged in
+            if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
+                self.setLoggedInUser(localUser)
+            }
+
+            completion(true)
+        }
+    }
+
+    // MARK: - Save User Locally
+    private func saveUserLocally(uid: String, email: String, name: String) {
+        let localUser = User(context: context)
+        localUser.userId = uid
+        localUser.userEmail = email
+        localUser.userName = name
+        try? context.save()
+    }
+
+    // MARK: - Fetch Local
+    private func fetchLocalUser(by uid: String) -> User? {
+        let request = User.fetchRequest()
+        request.predicate = NSPredicate(format: "userId == %@", uid)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+
+    // MARK: - Sign In
+    func signInUser(email: String, password: String, completion: @escaping (Bool) -> Void) {
+
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            
+            if let error = error {
+                self.authError = error.localizedDescription
+                completion(false)
+                return
+            }
+
+            guard let firebaseUser = result?.user else {
+                self.authError = "User not found"
+                completion(false)
+                return
+            }
+
+            let name = firebaseUser.displayName ?? ""
+
+            // Save/update local user
+            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+
+            // Fetch from Core Data
+            if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
+                self.setLoggedInUser(localUser)
+            }
+
+            self.fetchHabits()
+            completion(true)
+        }
+    }
+
+    // MARK: - Sign Out
+    func signOut() -> Bool {
+        do {
+            try Auth.auth().signOut()
+            clearLocalUser()
+            clearLoggedInUser()
+            habits = []
+            return true
         } catch {
-            authError = "Error checking existing user: \(error.localizedDescription)"
+            print("Sign-out error: \(error.localizedDescription)")
             return false
         }
-        
-        let user = User(context: context)
-        user.userId = UUID()
-        user.userEmail = email
-        user.userPassword = password
-        user.userName = name
-        
-        if saveContext() {
-            setLoggedInUser(user)
-            return true
-        }
-        return false
     }
-    
-    func signInUser(email: String, password: String) -> Bool {
+
+    private func clearLocalUser() {
         let request = User.fetchRequest()
-        request.predicate = NSPredicate(format: "userEmail == %@ AND userPassword == %@", email, password)
-        request.fetchLimit = 1
-        
-        do {
-            if let user = try context.fetch(request).first {
-                setLoggedInUser(user)
-                fetchHabits()
-                return true
-            } else {
-                authError = "Invalid email or password"
-            }
-        } catch {
-            authError = "Sign in error: \(error.localizedDescription)"
-            print(error.localizedDescription)
+        if let users = try? context.fetch(request) {
+            for user in users { context.delete(user) }
         }
-        return false
+        try? context.save()
     }
-    
-    func signOut() -> Bool {
-        currentUser = nil
-        clearLoggedInUser()
-        habits = []
-        return true
-    }
+
     
     // MARK: - Habit CRUD + Notifications
     func addHabit(name: String,

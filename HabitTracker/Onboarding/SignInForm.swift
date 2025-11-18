@@ -83,24 +83,30 @@ struct SignInForm: View {
             showError = true
             return
         }
-        
+
         isLoading = true
         focusedField = nil
         
-        // Hash password before sending
-        let hashedPassword = AuthenticationService.shared.hashPassword(userPassword)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if viewModel.signInUser(email: email, password: hashedPassword) {
-                appState.isLoggedIn = true
-                NotificationManager.shared.showSignInSuccessNotification(for: userEmail)
-            } else {
-                errorMessage = "The email or password you entered is incorrect."
-                showError = true
+        // 🚫 Do NOT hash the password — Firebase handles this internally
+        let password = userPassword
+
+        // ✅ Call the new Firebase-based sign-in method
+        viewModel.signInUser(email: email, password: password) { success in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                if success {
+                    // ✅ Update app state on success
+                    self.appState.isLoggedIn = true
+                    NotificationManager.shared.showSignInSuccessNotification(for: self.userEmail)
+                } else {
+                    // ❌ Show Firebase error message
+                    self.errorMessage = viewModel.authError ?? "The email or password you entered is incorrect."
+                    self.showError = true
+                }
             }
-            isLoading = false
         }
     }
+
 }
 
 #Preview {

@@ -139,20 +139,24 @@ struct SignUpForm: View {
         isLoading = true
         focusedField = nil // Dismiss keyboard
         
-        // Hash password
-        let hashedPassword = AuthenticationService.shared.hashPassword(userPassword)
+        // 🚫 DO NOT hash password for Firebase
+        let password = userPassword
         
-        // Simulate async operation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            if viewModel.signUpUser(email: email, password: hashedPassword, name: name) {
-                appState.isLoggedIn = true
-            } else {
-                errorMessage = "This email is already registered"
-                showError = true
+        // ✅ Call Firebase sign up (async)
+        viewModel.signUpUser(email: email, password: password, name: name) { success in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                
+                if success {
+                    self.appState.isLoggedIn = true
+                } else {
+                    self.errorMessage = self.viewModel.authError ?? "Failed to create your account."
+                    self.showError = true
+                }
             }
-            isLoading = false
         }
     }
+
 }
 
 #Preview {

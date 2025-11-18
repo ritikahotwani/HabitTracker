@@ -9,7 +9,7 @@ extension User {
         return NSFetchRequest<User>(entityName: "User")
     }
 
-    @NSManaged public var userId: UUID?
+    @NSManaged public var userId: String?
     @NSManaged public var userEmail: String?
     @NSManaged public var userName: String?
     @NSManaged public var userPassword: String?

@@ -49,7 +49,7 @@ struct PersistenceController {
         
         // Create sample data for previews
         let user = User(context: context)
-        user.userId = UUID()
+        user.userId = "id"
         user.userName = "Preview User"
         user.userEmail = "preview@example.com"
         user.userPassword = "password"
