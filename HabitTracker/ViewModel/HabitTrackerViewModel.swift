@@ -51,6 +51,7 @@ class HabitTrackerViewModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
     }
 
+
     // MARK: - Sign Up
     func signUpUser(email: String, password: String, name: String, completion: @escaping (Bool) -> Void) {
 
@@ -74,7 +75,18 @@ class HabitTrackerViewModel: ObservableObject {
             change.commitChanges(completion: nil)
 
             // Save to Core Data
-            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+//            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+            if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
+                // already exists → don’t create again
+                self.setLoggedInUser(localUser)
+            } else {
+                // create for the first time
+                self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+                if let newUser = self.fetchLocalUser(by: firebaseUser.uid) {
+                    self.setLoggedInUser(newUser)
+                }
+            }
+
 
             // Fetch local user & set logged in
             if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
@@ -138,8 +150,7 @@ class HabitTrackerViewModel: ObservableObject {
     func signOut() -> Bool {
         do {
             try Auth.auth().signOut()
-            clearLocalUser()
-            clearLoggedInUser()
+            clearLoggedInUser()     // Only remove from UserDefaults
             habits = []
             return true
         } catch {
@@ -147,14 +158,14 @@ class HabitTrackerViewModel: ObservableObject {
             return false
         }
     }
-
-    private func clearLocalUser() {
-        let request = User.fetchRequest()
-        if let users = try? context.fetch(request) {
-            for user in users { context.delete(user) }
-        }
-        try? context.save()
-    }
+//
+//    private func clearLocalUser() {
+//        let request = User.fetchRequest()
+//        if let users = try? context.fetch(request) {
+//            for user in users { context.delete(user) }
+//        }
+//        try? context.save()
+//    }
 
     
     // MARK: - Habit CRUD + Notifications
