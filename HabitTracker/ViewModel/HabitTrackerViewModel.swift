@@ -150,7 +150,8 @@ class HabitTrackerViewModel: ObservableObject {
     func signOut() -> Bool {
         do {
             try Auth.auth().signOut()
-            clearLoggedInUser()     // Only remove from UserDefaults
+            clearLoggedInUser()
+            NotificationManager.shared.cancelAllNotifications()
             habits = []
             return true
         } catch {
@@ -195,14 +196,18 @@ class HabitTrackerViewModel: ObservableObject {
         habit.isNotify = NSNumber(value: isNotify)
         
         if saveContext() {
-            // Schedule or cancel notifications based on isNotify
             if isNotify {
-                NotificationManager.shared.updateNotification(for: habit)
+                // Streak reminder for this habit
+                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
             } else {
                 NotificationManager.shared.cancelReminder(for: habit)
             }
+            // Recreate the ONE combined morning notification using updated habits list
+            NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+
             completion?()
         }
+
     }
     
     func editHabit(habit: Habit,
@@ -223,23 +228,28 @@ class HabitTrackerViewModel: ObservableObject {
         
         if saveContext() {
             if isNotify {
-                NotificationManager.shared.updateNotification(for: habit)
+                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
             } else {
                 NotificationManager.shared.cancelReminder(for: habit)
             }
+
+            NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
             completion?()
         }
+
     }
     
     func deleteHabit(offsets: IndexSet) {
         offsets.forEach { index in
             let habit = habits[index]
-            // Cancel all notifications before deleting
             NotificationManager.shared.cancelReminder(for: habit)
             context.delete(habit)
         }
-        saveContext()
+        if saveContext() {
+            NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+        }
     }
+
     
     func toggleHabitCompletion(habit: Habit, date: Date) {
         guard habit.id != nil else { return }
@@ -256,8 +266,10 @@ class HabitTrackerViewModel: ObservableObject {
         habit.completedDatesArray = currentDates
         
         if saveContext() {
-            NotificationManager.shared.updateNotification(for: habit)
+            NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+            NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
         }
+
     }
     
     func fetchHabits() {
@@ -286,15 +298,19 @@ class HabitTrackerViewModel: ObservableObject {
                 if !Calendar.current.isDate(lastWeekStart, inCurrentWeekFor: Date()) {
                     habit.datesCompleted = [] as NSObject
                     if saveContext() {
-                        NotificationManager.shared.updateNotification(for: habit)
+                        NotificationManager.shared.scheduleBestStreakReminder(for: habit)
                         print("🔁 Weekly reset for \(habit.name ?? "")")
                     }
                 }
             } else {
-                NotificationManager.shared.updateNotification(for: habit)
+                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
             }
         }
+
+        // After any changes, update the combined notification
+        NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
     }
+
     
     // MARK: - Private Save
     @discardableResult

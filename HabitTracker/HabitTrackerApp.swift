@@ -51,24 +51,37 @@ struct HabitTrackerApp: App {
 
     // MARK: - Weekly Reset + Notifications
     private func resetWeeklyProgressIfNeeded(viewContext: NSManagedObjectContext, habits: [Habit]) {
+        var habitsChanged = false
+
         for habit in habits {
             if let lastWeekStart = habit.weeklyProgress?.start {
                 if !Calendar.current.isDate(lastWeekStart, inCurrentWeekFor: Date()) {
                     habit.datesCompleted = [] as NSObject
-                    do {
-                        try viewContext.save()
-                        NotificationManager.shared.updateNotification(for: habit)
-                        print("🔁 Weekly reset for \(habit.name ?? "")")
-                    } catch {
-                        print("❌ Failed to save weekly reset:", error)
-                    }
+                    habitsChanged = true
                 }
             } else {
-                // Handle new habit without weeklyProgress
-                NotificationManager.shared.updateNotification(for: habit)
+                // New habit without weeklyProgress considered as changed
+                habitsChanged = true
+            }
+        }
+
+        if habitsChanged {
+            do {
+                try viewContext.save()
+                // After weekly reset: schedule streak reminders for each habit
+                for habit in habits {
+                    NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+                }
+                // After everything: re-schedule combined morning notification
+                NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+
+                print("🔁 Weekly reset + notifications updated")
+            } catch {
+                print("❌ Failed to save weekly reset:", error)
             }
         }
     }
+
 }
 
 
