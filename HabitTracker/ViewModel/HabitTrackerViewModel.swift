@@ -159,14 +159,6 @@ class HabitTrackerViewModel: ObservableObject {
             return false
         }
     }
-//
-//    private func clearLocalUser() {
-//        let request = User.fetchRequest()
-//        if let users = try? context.fetch(request) {
-//            for user in users { context.delete(user) }
-//        }
-//        try? context.save()
-//    }
 
     
     // MARK: - Habit CRUD + Notifications
@@ -253,24 +245,34 @@ class HabitTrackerViewModel: ObservableObject {
     
     func toggleHabitCompletion(habit: Habit, date: Date) {
         guard habit.id != nil else { return }
-        
+
         var currentDates = habit.completedDatesArray
         let calendar = Calendar.current
-        
+
         if let existingIndex = currentDates.firstIndex(where: { calendar.isDate($0, inSameDayAs: date) }) {
             currentDates.remove(at: existingIndex)
         } else {
             currentDates.append(date)
         }
-        
+
         habit.completedDatesArray = currentDates
-        
+
         if saveContext() {
-            NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+            let weeklyGoal = habit.noOfDays?.intValue ?? 7
+            let completedCountThisWeek = habit.completedDatesArray.filter {
+                Calendar.current.isDate($0, inCurrentWeekFor: Date())
+            }.count
+
+            if completedCountThisWeek >= weeklyGoal {
+                NotificationManager.shared.cancelReminder(for: habit)
+                print("✅ Weekly goal met for \(habit.name ?? ""). Cancelling evening streak reminder.")
+            } else {
+                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+            }
             NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
         }
-
     }
+
     
     func fetchHabits() {
         guard let user = currentUser else {

@@ -21,7 +21,7 @@ final class NotificationManager {
         }
     }
 
-    // MARK: - 🔔 Combined Daily Habit Reminder (ONE notification)
+    // MARK: - Combined Daily Habit Reminder (ONE notification)
     func scheduleCombinedMorningNotification(for habits: [Habit]) {
         // Remove old combined reminder (if any) to avoid duplicates
         UNUserNotificationCenter.current()
@@ -104,7 +104,7 @@ final class NotificationManager {
         }
     }
 
-    // MARK: - Best Streak Reminder
+    // MARK: - Best Streak Reminder (Evening, smart)
     func scheduleBestStreakReminder(for habit: Habit) {
         guard let id = habit.id?.uuidString,
               let name = habit.name else { return }
@@ -114,21 +114,33 @@ final class NotificationManager {
             Calendar.current.isDate($0, inCurrentWeekFor: Date())
         }.count
 
-        let daysRemaining = max(weeklyGoal - completedCount, 0)
-        guard daysRemaining > 0 else { return } // Goal already met
+        let daysRemaining = weeklyGoal - completedCount
+
+        // Only remind when exactly 1 day is left
+        guard daysRemaining == 1 else {
+            print("ℹ️ No streak reminder needed for \(name). Days remaining: \(daysRemaining)")
+            return
+        }
+
+        // Ensure only ONE pending streak reminder: remove old one if any
+        let streakIdentifier = "\(id)_streak"
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [streakIdentifier])
+
+        // 8 PM reminder
+        var reminderTime = DateComponents()
+        reminderTime.hour = 20   // 20 = 8 PM
+        reminderTime.minute = 0
 
         let content = UNMutableNotificationContent()
-        content.title = "Keep Going! 🔥"
-        content.body = "Only \(daysRemaining) day(s) left to beat your best streak in \(name)!"
+        content.title = "You're so close! 🔥"
+        content.body = "Only one day left to complete your weekly \(name) goal!"
         content.sound = .default
 
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: NotificationManager.defaultTime(),
-            repeats: false
-        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: reminderTime, repeats: false)
 
         let request = UNNotificationRequest(
-            identifier: "\(id)_streak",
+            identifier: streakIdentifier,
             content: content,
             trigger: trigger
         )
@@ -137,10 +149,12 @@ final class NotificationManager {
             if let error = error {
                 print("❌ Streak reminder error:", error.localizedDescription)
             } else {
-                print("🎯 Streak reminder set for \(name)")
+                print("🌙 Evening streak reminder set for \(name) at 8 PM")
             }
         }
     }
+
+
 
     // MARK: - Cancel Reminders for a Habit
     func cancelReminder(for habit: Habit) {
@@ -176,8 +190,13 @@ final class NotificationManager {
         components.minute = 0
         return components
     }
+    private func weekOfYear(_ date: Date) -> String {
+        let week = Calendar.current.component(.weekOfYear, from: date)
+        let year = Calendar.current.component(.yearForWeekOfYear, from: date)
+        return "\(year)-\(week)"
+    }
 
-    // ✅ NEW: Trigger a sign-in success notification
+    //  NEW: Trigger a sign-in success notification
     func showSignInSuccessNotification(for email: String) {
         let content = UNMutableNotificationContent()
         content.title = "🎉 Welcome love!"
