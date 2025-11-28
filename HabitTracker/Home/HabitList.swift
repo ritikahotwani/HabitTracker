@@ -15,22 +15,24 @@ struct HabitList: View {
         
         DateBar(dates: $dates)
         
-        List {
-            Section{
-               
-                HabitRow(dates: $dates)
+        
+        if viewModel.habits.count == 0{
+            NoHabitsView()
+                .offset(y: -70)
+
+        }else{
+            List {
+                Section{
+                    
+                    HabitRow(dates: $dates)
+                }
             }
             
-//            .listRowBackground(Color(.systemGray6))
-            
-        }
-        .listStyle(.plain)
-        
-        
-        .scrollContentBackground(.hidden)
-        
-        .listSectionSpacing(0)
-    }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .listSectionSpacing(0)
+        }}
+    
 }
 
 #Preview {

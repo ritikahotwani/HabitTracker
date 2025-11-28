@@ -15,7 +15,7 @@ struct HabitTrackerApp: App {
 
     @StateObject var appState = AppState()
     @StateObject var viewModel = HabitTrackerViewModel()
-
+    @AppStorage("isDarkMode") private var isDarkMode = false
     @Environment(\.scenePhase) private var scenePhase
     let viewContext = PersistenceController.shared.container.viewContext
 
@@ -29,6 +29,8 @@ struct HabitTrackerApp: App {
                 .environmentObject(appState)
                 .environmentObject(viewModel)
                 .environment(\.managedObjectContext, viewContext)
+                .environment(\.colorScheme, isDarkMode ? .dark : .light)
+
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {

@@ -11,25 +11,24 @@ struct ThemeToggleButton: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
-        Button(action: {
-            withAnimation(.easeInOut) {
+        Button {
+            
                 isDarkMode.toggle()
-            }
-        }) {
+
+        } label: {
             Image(systemName: isDarkMode ? "moon.fill" : "sun.max.fill")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: 16, weight: .medium))
                 .foregroundColor(isDarkMode ? .yellow : .orange)
-                .frame(width: 30, height: 30)
-                .padding(8)
+                .frame(width: 28, height: 28)
                 .background(
                     Circle()
-                        .fill(isDarkMode ? Color.black.opacity(0.3) : Color.white.opacity(0.7))
-                        .shadow(radius: 3)
+                        .fill(isDarkMode ? Color.black.opacity(0.2) : Color.white.opacity(0.6))
                 )
         }
-        .padding(.horizontal, 4)
+        .buttonStyle(.plain)     
     }
 }
+
 
 #Preview {
     ThemeToggleButton()

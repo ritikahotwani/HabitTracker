@@ -16,7 +16,7 @@ struct HabitHeaderView: View {
                 .foregroundColor(habit.habitColor)
             
             Text(habit.name ?? "Habit")
-                .font(.system(size: 20, weight: .bold))
+                .font(.system(size: 20, weight: .medium))
                 .foregroundColor(.primary)
                 
         }

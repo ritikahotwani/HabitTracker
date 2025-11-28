@@ -13,20 +13,16 @@ struct HeaderView: View {
 
     var body: some View {
         HStack {
-            Text("Habit Tracker")
-                .font(.system(size: 30, weight: .bold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .allowsTightening(true)
-
-
-
+            Text("Tiny Wins")
+                .font(.system(size: 35, weight: .bold))
+                .foregroundStyle(AppGradient.purple)
             Spacer()
-            ThemeToggleButton()
+                ProfileButton()
+//            ThemeToggleButton()
             AddButton()
-            LogOutButton()
+//            LogOutButton()
         }
-        .padding(.vertical, 10)
+        .padding(.vertical)
         .padding(.horizontal)
     }
 }

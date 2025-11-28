@@ -21,6 +21,8 @@ struct CountCard: View {
                 .fontWeight(.medium)
                 .kerning(1)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
 
             Text("\(count)")
                 .font(.system(size: 34, weight: .semibold, design: .rounded))
