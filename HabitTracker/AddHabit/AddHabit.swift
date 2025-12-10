@@ -49,6 +49,7 @@ struct AddHabit: View {
                 
                 Section{
                     Toggle("Remind me", isOn: $isNotify)
+                        .tint(AppGradient.purple)
                 }
                 
                 Section{

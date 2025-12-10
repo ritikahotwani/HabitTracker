@@ -30,6 +30,7 @@ struct SignInForm: View {
                     .autocorrectionDisabled()
                     .focused($focusedField, equals: .email)
                     .submitLabel(.next)
+                    .inputFieldStyle()
                     .onAppear{
                         focusedField = .email
                     }
@@ -42,6 +43,7 @@ struct SignInForm: View {
                 PasswordField(text: $userPassword, placeholder: "Password")
                     .focused($focusedField, equals: .password)
                     .submitLabel(.go)
+                    .inputFieldStyle() 
                     .onSubmit {
                         signIn()
                     }
@@ -61,6 +63,7 @@ struct SignInForm: View {
             .disabled(isFormInvalid || isLoading)
             .listRowBackground(Color.clear)
         }
+        .scrollContentBackground(.hidden)
         .listSectionSpacing(10)
         .alert("Sign In Failed", isPresented: $showError) {
             Button("OK", role: .cancel) { }
@@ -111,4 +114,20 @@ struct SignInForm: View {
 
 #Preview {
     SignInForm()
+}
+struct InputFieldStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            )
+    }
+}
+
+extension View {
+    func inputFieldStyle() -> some View {
+        self.modifier(InputFieldStyle())
+    }
 }

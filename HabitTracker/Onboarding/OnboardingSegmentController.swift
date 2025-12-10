@@ -19,6 +19,7 @@ struct OnboardingSegmentController: View {
             }
         }
         .pickerStyle(.segmented)
+        
         .tint(.black)
         .padding()
     }

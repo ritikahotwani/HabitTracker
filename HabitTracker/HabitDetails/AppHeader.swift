@@ -9,13 +9,13 @@ import SwiftUI
 struct AppHeader: View {
     var body: some View {
         VStack(spacing: 4) {
-            Text("Habit Tracker")
+            Text("Tiny Wins")
                 .font(.largeTitle.bold())
-                .foregroundStyle(Color.primary)
+                .foregroundStyle(AppGradient.purple)
             
             Text("Build better habits everyday.")
                 .font(.headline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppGradient.purpleMauve)
         }
         .padding(.horizontal)
     }

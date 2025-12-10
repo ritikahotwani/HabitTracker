@@ -47,6 +47,7 @@ struct HabitDetails: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden(true)
+        .enableSwipeBack()
         .id(refreshToggle) // 🔁 Forces view refresh when toggled
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {

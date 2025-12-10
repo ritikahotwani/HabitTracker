@@ -27,7 +27,7 @@ struct PasswordField: View {
                 isSecure.toggle()
             }) {
                 Image(systemName: isSecure ? "eye.slash.fill" : "eye.fill")
-                    .foregroundColor(.gray)
+                    .foregroundColor(AppGradient.lightpurple)
             }
             .buttonStyle(.plain)
         }

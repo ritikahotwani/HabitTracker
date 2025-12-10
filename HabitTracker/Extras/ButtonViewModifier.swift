@@ -14,7 +14,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, minHeight: 40)
             .padding(.vertical, 6)
-            .background(Color.black.opacity(configuration.isPressed ? 0.8 : 1))
+            .background(AppGradient.purple.opacity(configuration.isPressed ? 0.8 : 1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
 //            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
     }

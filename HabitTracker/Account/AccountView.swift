@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AccountView: View {
+    @State var showFeatureRequest = false
     @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
@@ -21,6 +22,17 @@ struct AccountView: View {
                     }
                     appearanceRow(title: "Dark Mode", isSelected: isDarkMode) {
                         isDarkMode = true
+                    }
+                }
+                Section("Feel like something is missing?"){
+                    Button(action: {
+                     showFeatureRequest = true
+                    }) {
+                       Text("Request a feature")
+                    }
+                    .padding(.horizontal, 4)
+                    .navigationDestination(isPresented: $showFeatureRequest) {
+                        FeatureRequestView()
                     }
                 }
 

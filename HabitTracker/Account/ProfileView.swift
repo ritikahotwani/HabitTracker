@@ -27,14 +27,12 @@ struct ProfileView: View {
             if let user = vm.currentUser {
                 Text("\(user.userName ?? "")")
                     .font(.system(size: 35, weight: .bold))
-
-            } else {
-                Text("No user logged in")
-                    .font(.system(size: 22, weight: .bold))
+                
+                
+                Text("\(user.userEmail ?? "")")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.gray)
             }
-            Text("email.com")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.gray)
         }
     }
 }

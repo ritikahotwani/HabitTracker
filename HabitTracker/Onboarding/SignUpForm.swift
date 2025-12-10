@@ -31,6 +31,7 @@ struct SignUpForm: View {
                     .autocorrectionDisabled()
                     .focused($focusedField, equals: .name)
                     .submitLabel(.next)
+                    .inputFieldStyle()
                     .onAppear{
                         focusedField = .name
                     }
@@ -45,6 +46,7 @@ struct SignUpForm: View {
                     .autocorrectionDisabled()
                     .focused($focusedField, equals: .email)
                     .submitLabel(.next)
+                    .inputFieldStyle()
                     .onSubmit { focusedField = .password }
             }
             
@@ -52,6 +54,7 @@ struct SignUpForm: View {
                 PasswordField(text: $userPassword, placeholder: "Password")
                     .focused($focusedField, equals: .password)
                     .submitLabel(.next)
+                    .inputFieldStyle()
                     .onSubmit { focusedField = .confirmPassword }
                 
 
@@ -64,6 +67,7 @@ struct SignUpForm: View {
                 PasswordField(text: $confirmPassword, placeholder: "Confirm Password")
                     .focused($focusedField, equals: .confirmPassword)
                     .submitLabel(.go)
+                    .inputFieldStyle()
                     .onSubmit { signUp() }
                 
                 // Password match indicator
@@ -92,7 +96,8 @@ struct SignUpForm: View {
             .disabled(isFormInvalid || isLoading)
             .listRowBackground(Color.clear)
         }
-        .listSectionSpacing(10)
+        .scrollContentBackground(.hidden)
+        .listSectionSpacing(5)
         .alert("Sign Up Error", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {

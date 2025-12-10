@@ -11,8 +11,8 @@ struct Onboarding: View {
     @State private var selectedOption: OnboardingOption = .signIn
     var body: some View {
         
-        VStack(spacing: 40) {
-           
+        VStack() {
+          
             AppHeader()
             OnboardingSegmentController(selectedOption: $selectedOption)
             
@@ -26,7 +26,7 @@ struct Onboarding: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: selectedOption)
         }
-        .padding()
+        .padding(.top, 120)
     }
 }
 
