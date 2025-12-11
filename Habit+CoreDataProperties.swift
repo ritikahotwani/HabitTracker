@@ -22,4 +22,6 @@ extension Habit {
     @NSManaged public var progress: NSNumber?
     @NSManaged public var user: User?
     @NSManaged public var isNotify: NSNumber?
+    @NSManaged public var sortOrder : Int16
+
 }

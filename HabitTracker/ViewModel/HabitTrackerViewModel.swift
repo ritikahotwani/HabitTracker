@@ -282,7 +282,12 @@ class HabitTrackerViewModel: ObservableObject {
         
         let request = Habit.fetchRequest()
         request.predicate = NSPredicate(format: "user == %@", user)
-        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: false)]
+//        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: false)]
+        request.sortDescriptors = [
+            NSSortDescriptor(key: "sortOrder", ascending: true),
+            NSSortDescriptor(key: "startDate", ascending: false)
+        ]
+
         
         do {
             habits = try context.fetch(request)
