@@ -19,7 +19,7 @@ struct HabitName: View {
                 )
                 .frame(width: 24, height: 24)
                 .padding(.top, 2)
-                VStack(alignment: .leading, spacing: 1) {
+                VStack(alignment: .leading, spacing: 2) {
 
                                 Text(habit.name ?? "")
                                     .font(.body)
