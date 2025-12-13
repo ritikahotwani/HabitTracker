@@ -13,7 +13,19 @@ struct FeatureRequestView: View {
     @State private var description: String = ""
     @State private var showMailSheet = false
     @State private var showMailError = false
-    
+    @State private var isBlocking = false
+    var composedMailBody: String {
+        """
+        Feature Description:
+        \(description)
+
+        -----------------------
+
+        Is this blocking progress?
+        \(isBlocking ? "Yes" : "No")
+        """
+    }
+
     var body: some View {
         Form {
             Section(header: Text("Feature Title")) {
@@ -23,6 +35,11 @@ struct FeatureRequestView: View {
             Section(header: Text("Description")) {
                 TextEditor(text: $description)
                     .frame(minHeight: 120)
+            }
+
+            Section {
+                Toggle("This is blocking my progress", isOn: $isBlocking)
+                    .tint(AppGradient.purple)
             }
             
             Section {
@@ -35,14 +52,21 @@ struct FeatureRequestView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             }
+
         }
         .navigationTitle("Request a Feature")
         .sheet(isPresented: $showMailSheet) {
             MailView(
                 subject: "Feature Request: \(title)",
-                body: description,
-                toEmail: "ritikahotwani24@gmail.com" // ← replace
-            )
+                body: composedMailBody,
+                toEmail: "ritikahotwani24@gmail.com"
+            ) { result in
+                if result == .sent {
+                    title = ""
+                    description = ""
+                    isBlocking = false
+                }
+            }
         }
         .alert("Mail services are not available.", isPresented: $showMailError) {
             Button("OK", role: .cancel) {}
@@ -57,8 +81,9 @@ struct FeatureRequestView: View {
 struct MailView: UIViewControllerRepresentable {
     var subject: String
     var body: String
-    var toEmail: String
     
+    var toEmail: String
+    var onResult: (MFMailComposeResult) -> Void
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
         let vc = MFMailComposeViewController()
         vc.mailComposeDelegate = context.coordinator
@@ -89,6 +114,7 @@ struct MailView: UIViewControllerRepresentable {
             error: Error?
         ) {
             controller.dismiss(animated: true)
+            parent.onResult(result)
         }
     }
 }
