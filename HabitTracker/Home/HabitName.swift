@@ -18,7 +18,7 @@ struct HabitName: View {
             )
             .frame(width: 24, height: 24)
             Text(habit.name ?? "")
-                .lineLimit(1)
+                .lineLimit(2)
                 .truncationMode(.tail)
                 .background(
                     NavigationLink("", destination: HabitDetails(habit: habit))
