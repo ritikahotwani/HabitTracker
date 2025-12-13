@@ -11,21 +11,35 @@ struct HabitName: View {
     let calendar = Calendar.current
     let today = Date()
     var body: some View {
-        HStack(spacing: 8) {
-            CircularProgressView(
-                progress: CGFloat((100.0 / Double(truncating: habit.noOfDays ?? 7) / 100.0)*Double(habit.completedDatesArray.count)),
-                color: habit.habitColor
-            )
-            .frame(width: 24, height: 24)
-            Text(habit.name ?? "")
-                .lineLimit(2)
-                .truncationMode(.tail)
-                .background(
-                    NavigationLink("", destination: HabitDetails(habit: habit))
-                        .opacity(0)
+        
+            HStack(spacing: 8) {
+                CircularProgressView(
+                    progress: CGFloat((100.0 / Double(truncating: habit.noOfDays ?? 7) / 100.0)*Double(habit.completedDatesArray.count)),
+                    color: habit.habitColor
                 )
+                .frame(width: 24, height: 24)
+                .padding(.top, 2)
+                VStack(alignment: .leading, spacing: 1) {
+
+                                Text(habit.name ?? "")
+                                    .font(.body)
+                                    .lineLimit(2)
+                                    .truncationMode(.tail)
+
+                                Text("\(habit.completedDatesArray.count) of \(habit.noOfDays ?? 7) days")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                            .background(
+                                NavigationLink("", destination: HabitDetails(habit: habit))
+                                    .opacity(0)
+                            )
+            }
+            
+           
         }
-    }
+    
 }
 
 

@@ -24,16 +24,14 @@ struct AccountView: View {
                         isDarkMode = true
                     }
                 }
-                Section("Feel like something is missing?"){
-                    Button(action: {
-                     showFeatureRequest = true
-                    }) {
-                       Text("Request a feature")
+
+                Section("Feel like something is missing?") {
+                    Button {
+                        showFeatureRequest = true
+                    } label: {
+                        Text("Request a feature")
                     }
                     .padding(.horizontal, 4)
-                    .navigationDestination(isPresented: $showFeatureRequest) {
-                        FeatureRequestView()
-                    }
                 }
 
                 Section("Account") {
@@ -45,7 +43,13 @@ struct AccountView: View {
         .padding(.top, 20)
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Account")
+
+        .navigationDestination(isPresented: $showFeatureRequest) {
+            FeatureRequestView()
+        }
     }
+}
+
 
 
     private func appearanceRow(title: String, isSelected: Bool, onTap: @escaping () -> Void) -> some View {
@@ -62,7 +66,7 @@ struct AccountView: View {
         }
         .buttonStyle(.plain)
     }
-}
+
 
 
 #Preview {

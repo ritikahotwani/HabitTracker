@@ -7,35 +7,40 @@
 import SwiftUI
 
 struct HabitCheckBox: View {
-    @State var habit: Habit
-    @Binding  var dates: [Date]
+    @ObservedObject var habit: Habit
+    @Binding var dates: [Date]
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
-        ForEach(dates, id: \.self) { date in
-            Button(action: {
-                viewModel.toggleHabitCompletion(habit: habit, date: date)
-                vibrate(style: .medium)
-            }) {
-                let isCompleted = habit.completedDatesArray.contains {
-                    Calendar.current.isDate($0, inSameDayAs: date)
+        HStack(spacing: 0) {
+            ForEach(dates, id: \.self) { date in
+                Button {
+                    viewModel.toggleHabitCompletion(habit: habit, date: date)
+                    vibrate(style: .medium)
+                } label: {
+                    let isCompleted = habit.completedDatesArray.contains {
+                        Calendar.current.isDate($0, inSameDayAs: date)
+                    }
+
+                    Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+
+                        .foregroundColor(
+                            isCompleted
+                            ? (colorScheme == .dark ? .white : .black)
+                            : (colorScheme == .dark ? .gray.opacity(0.7) : .gray)
+                        )
+                        .frame(width: dayColumnWidth)
                 }
-                
-                Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(
-                           isCompleted
-                           ? (colorScheme == .dark ? Color.white : Color.black)
-                           : (colorScheme == .dark ? Color.gray.opacity(0.7) : Color.gray))
-                    .frame(width: 40)
+                .buttonStyle(.plain)
             }
-            .buttonStyle(PlainButtonStyle())
-            .contentShape(Rectangle())
         }
     }
 }
+
 
 #Preview {
     let testHabit = Habit(context: PersistenceController.shared.container.viewContext)

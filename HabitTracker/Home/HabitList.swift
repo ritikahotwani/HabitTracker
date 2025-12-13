@@ -9,44 +9,48 @@ import SwiftUI
 
 struct HabitList: View {
     @EnvironmentObject var viewModel: HabitTrackerViewModel
-    @Binding  var dates: [Date]
-    @Environment(\.scenePhase) private var scenePhase
+    @Binding var dates: [Date]
 
-    
     var body: some View {
-        VStack {
+        List {
+
+            // HEADER
             DateBar(dates: $dates)
+                .listRowInsets(
+                    EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+                )
 
-            if viewModel.habits.count == 0 {
-                NoHabitsView()
-                    .offset(y: -70)
-            } else {
-                List {
-                    Section {
-                        HabitRow(dates: $dates)
-                    }
+
+            // ROWS
+            ForEach(viewModel.habits) { habit in
+                HabitRowItem(habit: habit, dates: $dates)
+                    .listRowInsets(
+                        EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
+                    )
+
+            }
+            .onDelete { indexSet in
+                viewModel.deleteHabit(offsets: indexSet)
+                vibrate(style: .rigid)
+            }
+            .onMove { indexSet, newIndex in
+                viewModel.habits.move(fromOffsets: indexSet, toOffset: newIndex)
+
+                // persist order
+                for (i, habit) in viewModel.habits.enumerated() {
+                    habit.sortOrder = Int16(i)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .listSectionSpacing(0)
+                viewModel.saveContext()
+
+                vibrate(style: .soft)
             }
         }
-        .task(id: scenePhase) {
-            guard scenePhase == .active else { return }
-
-            let today = Calendar.current.startOfDay(for: Date())
-            let firstDate = Calendar.current.startOfDay(for: dates.first ?? Date())
-
-            if today != firstDate {
-                dates = viewModel.loadRecentDates()
-            }
-        }
-
-    }
-
+        .listStyle(.plain)
+//        .padding(.horizontal) 
         
-    
+    }
 }
+
 
 #Preview {
     HabitList(dates: .constant(HabitTrackerViewModel().loadRecentDates()))

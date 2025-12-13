@@ -7,61 +7,58 @@
 
 import SwiftUI
 
-
-struct HabitRow: View {
-    @Binding  var dates: [Date]
+struct HabitRowItem: View {
+    @ObservedObject var habit: Habit
+    @Binding var dates: [Date]
     @EnvironmentObject var viewModel: HabitTrackerViewModel
-//    @State private var showDeleteAlert = false
-//    @State private var pendingDeleteIndex: IndexSet?
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        ForEach(viewModel.habits) { habit in
-            HStack(spacing: 8){
-                HabitName(habit: habit)
-                    
-                Spacer(minLength: 4)
-                HabitCheckBox(habit: habit, dates: $dates)
-            }
-            .padding()
-            .listRowInsets(EdgeInsets())
-        }
-        
-        .onDelete { indexSet in
-//            pendingDeleteIndex = indexSet
-//            showDeleteAlert = true
-            viewModel.deleteHabit(offsets: indexSet)
-                         vibrate(style: .rigid)
-        }
-        .onMove { indexSet, newIndex in
-            vibrate(style: .soft)
-            viewModel.habits.move(fromOffsets: indexSet, toOffset: newIndex)
-            for (i, habit) in viewModel.habits.enumerated() {
-                habit.sortOrder = Int16(i)
-            }
-            viewModel.saveContext()
-        }
-//        .alert("Delete Habit?",
-//               isPresented: $showDeleteAlert,
-//               presenting: pendingDeleteIndex) { indexSet in
-//
-//            Button("Cancel", role: .cancel) {}
-//
-//            Button("Delete", role: .destructive) {
-//                viewModel.deleteHabit(offsets: indexSet)
-//                vibrate(style: .rigid)
-//            }
-//
-//        } message: { _ in
-//            Text("Are you sure you want to delete this habit? This action cannot be undone.")
-//        }
+        GeometryReader { geo in
+            let totalWidth = geo.size.width
+            let nameWidth = totalWidth * 0.45
+            let dayWidth = (totalWidth * 0.55) / CGFloat(dates.count)
 
-        
+            HStack(spacing: 0) {
+
+                // Habit name (adaptive)
+                HabitName(habit: habit)
+                    .frame(width: nameWidth, alignment: .leading)
+
+                // Date checkboxes
+                HStack(spacing: 0) {
+                    ForEach(dates, id: \.self) { date in
+                        let isCompleted = habit.completedDatesArray.contains {
+                            Calendar.current.isDate($0, inSameDayAs: date)
+                        }
+
+                        Button {
+                            viewModel.toggleHabitCompletion(habit: habit, date: date)
+                            vibrate(style: .medium)
+                        } label: {
+                            Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(
+                                    isCompleted
+                                    ? (colorScheme == .dark ? .white : .black)
+                                    : .gray
+                                )
+                                .frame(width: dayWidth)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .frame(height: 36)   // 👈 compact row height
     }
 }
 
-#Preview {
-    HabitRow(dates: .constant(HabitTrackerViewModel().loadRecentDates()))
-}
+
+
+
 
 
 
