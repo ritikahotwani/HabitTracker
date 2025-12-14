@@ -12,13 +12,14 @@ struct HabitList: View {
     @Binding var dates: [Date]
 
     var body: some View {
+        DateBar(dates: $dates)
+            .listRowInsets(
+                EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+            )
+
         List {
 
             // HEADER
-            DateBar(dates: $dates)
-                .listRowInsets(
-                    EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
-                )
 
 
             // ROWS

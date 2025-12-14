@@ -17,7 +17,7 @@ struct HabitName: View {
                     progress: CGFloat((100.0 / Double(truncating: habit.noOfDays ?? 7) / 100.0)*Double(habit.completedDatesArray.count)),
                     color: habit.habitColor
                 )
-                .frame(width: 24, height: 24)
+                .frame(width: 30, height: 30)
                 .padding(.top, 2)
                 VStack(alignment: .leading, spacing: 2) {
 

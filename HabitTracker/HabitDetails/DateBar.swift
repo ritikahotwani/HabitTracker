@@ -37,13 +37,13 @@ struct DateBar: View {
 
                 HStack(spacing: 0) {
                     ForEach(dates, id: \.self) { date in
-                        VStack(spacing: 2) {
+                        VStack(spacing: 4) {
                             Text(viewModel.formatDayForDisplay(date))
-                                .font(.caption2)
+                                .font(.footnote)
                                 .foregroundColor(.secondary)
 
                             Text(viewModel.formatDateForDisplay(date))
-                                .font(.caption)
+                                .font(.callout)              
                                 .fontWeight(.semibold)
                         }
                         .frame(width: dayWidth)
@@ -51,7 +51,7 @@ struct DateBar: View {
                 }
             }
         }
-        .frame(height: 32)
+        .frame(height: 40)
     }
 }
 

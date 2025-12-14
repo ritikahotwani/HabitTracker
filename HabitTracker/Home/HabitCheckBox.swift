@@ -26,7 +26,7 @@ struct HabitCheckBox: View {
                     Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 24, height: 24)
 
                         .foregroundColor(
                             isCompleted

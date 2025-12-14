@@ -13,13 +13,22 @@ struct HeaderView: View {
 
     var body: some View {
         HStack {
-            Text("Tiny Wins")
-                .font(.system(size: 35, weight: .bold))
-                .foregroundStyle(AppGradient.purple)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Tiny Wins")
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .tracking(0.4)
+                    .foregroundStyle(AppGradient.purple)
+
+                Text("Small habits. Big change.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+
             Spacer()
-                ProfileButton()
+            
 //            ThemeToggleButton()
             AddButton()
+            ProfileButton()
 //            LogOutButton()
         }
         .padding(.vertical)
