@@ -12,16 +12,15 @@ struct HabitList: View {
     @Binding var dates: [Date]
 
     var body: some View {
+        if viewModel.habits.count == 0{
+            NoHabitsView()
+        }else{
         DateBar(dates: $dates)
             .listRowInsets(
                 EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
             )
 
         List {
-
-            // HEADER
-
-
             // ROWS
             ForEach(viewModel.habits) { habit in
                 HabitRowItem(habit: habit, dates: $dates)
@@ -50,6 +49,7 @@ struct HabitList: View {
 //        .padding(.horizontal) 
         
     }
+}
 }
 
 
