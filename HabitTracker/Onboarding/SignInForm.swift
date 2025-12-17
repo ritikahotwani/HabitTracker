@@ -11,10 +11,10 @@ enum SignInField: Hashable {
 struct SignInForm: View {
     
     @State private var userEmail: String = ""
-       @State private var userPassword: String = ""
-       @State private var showError = false
-       @State private var errorMessage = ""
-       @State private var isLoading = false
+    @State private var userPassword: String = ""
+    @State private var showError = false
+    @State private var errorMessage = ""
+    @State private var isLoading = false
     
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @EnvironmentObject var appState: AppState
@@ -43,7 +43,7 @@ struct SignInForm: View {
                 PasswordField(text: $userPassword, placeholder: "Password")
                     .focused($focusedField, equals: .password)
                     .submitLabel(.go)
-                    .inputFieldStyle() 
+                    .inputFieldStyle()
                     .onSubmit {
                         signIn()
                     }
@@ -62,7 +62,18 @@ struct SignInForm: View {
             .buttonStyle(PrimaryButtonStyle())
             .disabled(isFormInvalid || isLoading)
             .listRowBackground(Color.clear)
+
+                Button(action: signIn) {
+                        Text("Forgot Password?")
+                            .frame(maxWidth: .infinity)
+                    
+                }
+                .buttonStyle(.plain)
+            
+            
         }
+        .listRowBackground(Color.clear)
+        
         .scrollContentBackground(.hidden)
         .listSectionSpacing(10)
         .alert("Sign In Failed", isPresented: $showError) {
@@ -86,13 +97,12 @@ struct SignInForm: View {
             showError = true
             return
         }
-
+        
         isLoading = true
         focusedField = nil
         
-        // 🚫 Do NOT hash the password — Firebase handles this internally
         let password = userPassword
-
+        
         // ✅ Call the new Firebase-based sign-in method
         viewModel.signInUser(email: email, password: password) { success in
             DispatchQueue.main.async {
@@ -109,12 +119,15 @@ struct SignInForm: View {
             }
         }
     }
-
+    
 }
 
 #Preview {
     SignInForm()
 }
+
+
+
 struct InputFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
