@@ -15,6 +15,7 @@ struct SignInForm: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var isLoading = false
+    @State private var presentFPView = false
     
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @EnvironmentObject var appState: AppState
@@ -61,16 +62,16 @@ struct SignInForm: View {
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(isFormInvalid || isLoading)
-            .listRowBackground(Color.clear)
-
-                Button(action: signIn) {
-                        Text("Forgot Password?")
-                            .frame(maxWidth: .infinity)
-                    
-                }
-                .buttonStyle(.plain)
-            
-            
+            Button{
+                presentFPView = true
+            }
+            label:{
+                    Text("Forgot Password?")
+                        .frame(maxWidth: .infinity)
+                
+            }
+            .buttonStyle(.plain)
+        
         }
         .listRowBackground(Color.clear)
         
@@ -80,6 +81,9 @@ struct SignInForm: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .sheet(isPresented: $presentFPView){
+            ForgotPasswordView()
         }
     }
     private var isFormInvalid: Bool {
@@ -131,7 +135,7 @@ struct SignInForm: View {
 struct InputFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(12)
+            .padding(8)
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)

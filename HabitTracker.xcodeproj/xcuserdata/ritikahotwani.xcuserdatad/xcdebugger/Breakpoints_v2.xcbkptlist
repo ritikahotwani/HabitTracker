@@ -30,8 +30,8 @@
             filePath = "HabitTracker/ViewModel/HabitTrackerViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "174"
-            endingLineNumber = "174"
+            startingLineNumber = "196"
+            endingLineNumber = "196"
             landmarkName = "addHabit(name:priorityColor:frequency:note:noOfDays:isNotify:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "HabitTracker/ViewModel/HabitTrackerViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
             landmarkName = "addHabit(name:priorityColor:frequency:note:noOfDays:isNotify:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "HabitTracker/ViewModel/HabitTrackerViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
+            startingLineNumber = "184"
+            endingLineNumber = "184"
             landmarkName = "HabitTrackerViewModel"
             landmarkType = "3">
          </BreakpointContent>
