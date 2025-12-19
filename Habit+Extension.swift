@@ -103,3 +103,18 @@ extension Habit {
         return (start: monthStart, end: monthEnd, progress: progress)
     }
 }
+extension Habit {
+    var weeklyCompletedCount: Int {
+        let calendar = Calendar.current
+        let today = Date()
+
+        guard let weekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else {
+            return 0
+        }
+        let weekEnd = calendar.date(byAdding: .day, value: 7, to: weekStart)!
+
+        return completedDatesArray.filter {
+            $0 >= weekStart && $0 < weekEnd
+        }.count
+    }
+}

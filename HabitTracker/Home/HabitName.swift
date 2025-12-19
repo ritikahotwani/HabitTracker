@@ -10,13 +10,19 @@ struct HabitName: View {
     @State var habit: Habit
     let calendar = Calendar.current
     let today = Date()
+    
     var body: some View {
         
             HStack(spacing: 8) {
+                let weeklyProgress =
+                    CGFloat(habit.weeklyCompletedCount) /
+                    CGFloat(Double(truncating: habit.noOfDays ?? 7))
+
                 CircularProgressView(
-                    progress: CGFloat((100.0 / Double(truncating: habit.noOfDays ?? 7) / 100.0)*Double(habit.completedDatesArray.count)),
+                    progress: weeklyProgress,
                     color: habit.habitColor
                 )
+
                 .frame(width: 30, height: 30)
                 .padding(.top, 2)
                 VStack(alignment: .leading, spacing: 2) {
@@ -26,10 +32,11 @@ struct HabitName: View {
                                     .lineLimit(2)
                                     .truncationMode(.tail)
 
-                                Text("\(habit.completedDatesArray.count) of \(habit.noOfDays ?? 7) days")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                    Text("\(habit.weeklyCompletedCount) of \(habit.noOfDays ?? 7) days")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+
                             }
                             .background(
                                 NavigationLink("", destination: HabitDetails(habit: habit))

@@ -14,7 +14,9 @@ struct MonthlyProgressBar: View {
     let progress: CGFloat
     let startDate: Date
     let endDate: Date
-    
+    var clampedProgress: CGFloat {
+          min(max(progress, 0), 1)
+      }
     var body: some View {
         VStack(spacing: 8) {
             GeometryReader { geometry in
@@ -35,7 +37,9 @@ struct MonthlyProgressBar: View {
                                 endPoint: .trailing
                             )
                         )
-                        .frame(width: geometry.size.width * progress)
+//                        .frame(width: geometry.size.width * progress)
+                        .frame(width: geometry.size.width * clampedProgress)
+
                 }
             }
             .frame(height: 12)
