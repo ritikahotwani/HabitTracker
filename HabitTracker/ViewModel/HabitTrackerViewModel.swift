@@ -13,7 +13,8 @@ class HabitTrackerViewModel: ObservableObject {
     @Published var habits: [Habit] = []
     @Published var currentUser: User?
     @Published var authError: String?
-    
+    @Published var resetPasswordSuccess: Bool = false
+
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
 
@@ -68,7 +69,7 @@ class HabitTrackerViewModel: ObservableObject {
                 completion(false)
                 return
             }
-            
+            self.authError = nil
             // Save displayName
             let change = firebaseUser.createProfileChangeRequest()
             change.displayName = name
@@ -130,7 +131,7 @@ class HabitTrackerViewModel: ObservableObject {
                 completion(false)
                 return
             }
-
+            self.authError = nil
             let name = firebaseUser.displayName ?? ""
 
             // Save/update local user
@@ -145,7 +146,28 @@ class HabitTrackerViewModel: ObservableObject {
             completion(true)
         }
     }
+    // MARK: - Forgot Password
+    func resetPassword(email: String) {
+        guard !email.isEmpty else {
+            authError = "Please enter your email address"
+            resetPasswordSuccess = false
+            return
+        }
 
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.authError = error.localizedDescription
+                    self.resetPasswordSuccess = false
+                } else {
+                    self.authError = nil
+                    self.resetPasswordSuccess = true
+                }
+            }
+        }
+    }
+
+    
     // MARK: - Sign Out
     func signOut() -> Bool {
         do {
@@ -175,7 +197,7 @@ class HabitTrackerViewModel: ObservableObject {
             authError = "No user logged in"
             return
         }
-        
+        self.authError = nil
         let habit = Habit(context: context)
         habit.user = user
         habit.name = name
@@ -293,6 +315,7 @@ class HabitTrackerViewModel: ObservableObject {
         
         do {
             habits = try context.fetch(request)
+           authError = nil
         } catch {
             authError = "Failed to fetch habits: \(error.localizedDescription)"
             print(error.localizedDescription)
@@ -328,6 +351,7 @@ class HabitTrackerViewModel: ObservableObject {
         do {
             try context.save()
             fetchHabits()
+            authError = nil
             return true
         } catch {
             authError = "Failed to save: \(error.localizedDescription)"

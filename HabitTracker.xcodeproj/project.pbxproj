@@ -51,6 +51,7 @@
 		9E743C782EE70F180021C591 /* SwipeBackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E743C772EE70F180021C591 /* SwipeBackHelper.swift */; };
 		9E9E41382EBCF3D9004ACFEE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9E9E41372EBCF3D9004ACFEE /* FirebaseAuth */; };
 		9E9E413C2EBCF3D9004ACFEE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9E9E413B2EBCF3D9004ACFEE /* FirebaseCore */; };
+		9EA39D552EF24D35005168E8 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA39D542EF24D34005168E8 /* ForgotPasswordView.swift */; };
 		9EBEFCDC2EACF14F00F7D4DA /* EditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */; };
 		9EEF534D2EF7CD9A00CDEA1D /* EmojiTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEF534C2EF7CD9A00CDEA1D /* EmojiTextField.swift */; };
 		9EF0C8552E8BF8F400B01A3C /* HabitTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */; };
@@ -140,6 +141,7 @@
 		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9E743C772EE70F180021C591 /* SwipeBackHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackHelper.swift; sourceTree = "<group>"; };
+		9EA39D542EF24D34005168E8 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHabitView.swift; sourceTree = "<group>"; };
 		9EEF534C2EF7CD9A00CDEA1D /* EmojiTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiTextField.swift; sourceTree = "<group>"; };
 		9EF0C8512E8BF8F400B01A3C /* HabitTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -280,6 +282,7 @@
 				9E528F332E8C14C500FCCE91 /* OnboardingSegmentController.swift */,
 				9E528F352E8C14DE00FCCE91 /* PasswordField.swift */,
 				9E528F432E8C1D7000FCCE91 /* AuthenticationService.swift */,
+				9EA39D542EF24D34005168E8 /* ForgotPasswordView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -535,6 +538,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EA39D552EF24D35005168E8 /* ForgotPasswordView.swift in Sources */,
 				9E528F4C2E8C2AD300FCCE91 /* HabitHeaderView.swift in Sources */,
 				9EF0C85E2E8BF8F500B01A3C /* Persistence.swift in Sources */,
 				9E528F342E8C14C500FCCE91 /* OnboardingSegmentController.swift in Sources */,
