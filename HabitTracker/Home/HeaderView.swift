@@ -6,35 +6,31 @@
 //
 import SwiftUI
 
-import SwiftUI
-
 struct HeaderView: View {
-
-
+    @EnvironmentObject var vm: HabitTrackerViewModel
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Tiny Wins")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
-                    .tracking(0.4)
-                    .foregroundStyle(AppGradient.purple)
-
-                Text("Small habits. Big change.")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                if let user = vm.currentUser {
+                    Text("Hello,")
+                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                        .foregroundStyle(AppGradient.purple)
+                    
+                    Text("\(user.userName ?? "")")
+                        .font(.system(size: 28, weight: .medium, design: .rounded))
+                        .foregroundStyle(.black)
+                }
             }
-
             Spacer()
-            
-//            ThemeToggleButton()
+
             AddButton()
             ProfileButton()
-//            LogOutButton()
         }
         .padding(.vertical)
         .padding(.horizontal)
     }
 }
+
 
 
 

@@ -86,20 +86,21 @@ struct AddHabit: View {
             }
             
             .navigationBarBackButtonHidden(true)
-            .navigationTitle("")
+            .navigationTitle("Create Habit")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar{
-                ToolbarItem(placement: .topBarLeading){
-                    Button(action: {
-                        dismiss()
-                    }){
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.black)
-                    }
-                }
-                ToolbarItem(placement: .principal){
-                    Text("Create Habit")
-                        .font(.headline)
-                }
+//                ToolbarItem(placement: .topBarLeading){
+//                    Button(action: {
+//                        dismiss()
+//                    }){
+//                        Image(systemName: "chevron.left")
+//                            .foregroundColor(.black)
+//                    }
+//                }
+//                ToolbarItem(placement: .principal){
+//                    Text("Create Habit")
+//                        .font(.headline)
+//                }
                 ToolbarItem(placement: .topBarTrailing){
                     Button("Save"){
                         if let colorData = selectedColor.toData() {

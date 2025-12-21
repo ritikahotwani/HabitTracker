@@ -55,6 +55,7 @@ struct FeatureRequestView: View {
 
         }
         .navigationTitle("Request a Feature")
+        .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showMailSheet) {
             MailView(
                 subject: "Feature Request: \(title)",

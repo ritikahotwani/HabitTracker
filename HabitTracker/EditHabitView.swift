@@ -60,19 +60,20 @@ struct EditHabitView: View {
         }
         .listSectionSpacing(10)
         .onAppear(perform: populateExistingData)
-        .navigationBarBackButtonHidden(true)
-        .navigationTitle("")
+//        .navigationBarBackButtonHidden(true)
+        .navigationTitle("Edit Habit")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.black)
-                }
-            }
-            ToolbarItem(placement: .principal) {
-                Text("Edit Habit")
-                    .font(.headline)
-            }
+//            ToolbarItem(placement: .topBarLeading) {
+//                Button(action: { dismiss() }) {
+//                    Image(systemName: "chevron.left")
+//                        .foregroundColor(.black)
+//                }
+//            }
+//            ToolbarItem(placement: .principal) {
+//                Text("Edit Habit")
+//                    .font(.headline)
+//            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Save") {
                     saveChanges()

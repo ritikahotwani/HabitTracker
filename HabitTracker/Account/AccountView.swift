@@ -43,6 +43,7 @@ struct AccountView: View {
         .padding(.top, 20)
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Account")
+        .navigationBarTitleDisplayMode(.inline)
 
         .navigationDestination(isPresented: $showFeatureRequest) {
             FeatureRequestView()
