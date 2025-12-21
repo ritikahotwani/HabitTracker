@@ -163,6 +163,7 @@ class HabitTrackerViewModel: ObservableObject {
     
     // MARK: - Habit CRUD + Notifications
     func addHabit(name: String,
+                  icon: String,
                   priorityColor: NSObject,
                   frequency: String,
                   note: String,
@@ -178,6 +179,7 @@ class HabitTrackerViewModel: ObservableObject {
         let habit = Habit(context: context)
         habit.user = user
         habit.name = name
+        habit.icon = icon
         habit.id = UUID()
         habit.datesCompleted = [] as NSObject
         habit.priorityColor = priorityColor

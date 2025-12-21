@@ -23,5 +23,6 @@ extension Habit {
     @NSManaged public var user: User?
     @NSManaged public var isNotify: NSNumber?
     @NSManaged public var sortOrder : Int16
+    @NSManaged public var icon: String?
 
 }

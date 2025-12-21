@@ -12,13 +12,12 @@ struct HabitHeaderView: View {
     
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: "flame.fill")
-                .foregroundColor(habit.habitColor)
             
             Text(habit.name ?? "Habit")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(.primary)
-                
+            Text(habit.icon ?? "✨")
+                .font(.system(size: 28))
         }
     }
 }

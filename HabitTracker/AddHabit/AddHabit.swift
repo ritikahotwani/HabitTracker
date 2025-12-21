@@ -15,6 +15,7 @@ struct AddHabit: View {
     @FocusState private var nameFieldIsFocused: Bool
     @State private var habitFrequency: HabitFrequency = .Daily
     @State private var noOfDays: Int = 7
+    @State private var habitIcon: String = "✨"
     @State private var selectedColor: Color = .red
     
     var body: some View {
@@ -29,15 +30,6 @@ struct AddHabit: View {
                     
                 }
                 
-                //                Section{
-                //                    Picker("Frequency", selection: $habitFrequency){
-                //                        ForEach(HabitFrequency.allCases){ frequency in
-                //                            Text(frequency.rawValue)
-                //                        }
-                //                    }
-                //                }
-                //                .frame(height: 35)
-                //
                 Section {
                     Picker("Number of Days", selection: $noOfDays) {
                         ForEach(1...7, id: \.self) { i in
@@ -52,6 +44,21 @@ struct AddHabit: View {
                         .tint(AppGradient.purple)
                 }
                 
+                Section {
+                    HStack {
+                        Text("Icon")
+                            .foregroundStyle(.primary)
+
+                        Spacer()
+
+                        EmojiTextField(text: $habitIcon)
+                            .frame(width: 44, height: 44)
+                            .background(Color.gray.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+
+
                 Section{
                     ZStack(alignment: .topLeading) {
                         if habitNote.isEmpty {
@@ -69,7 +76,6 @@ struct AddHabit: View {
                 
                 Section{
                     ColorPickerView(selectedColor: $selectedColor)
-                    //                        .listRowBackground(Color.clear)
                 }
                 
             }
@@ -98,12 +104,18 @@ struct AddHabit: View {
                     Button("Save"){
                         if let colorData = selectedColor.toData() {
                             vibrate(style: .light)
-                            viewModel.addHabit(name: habitName,
-                                               priorityColor: colorData as NSObject,
-                                               frequency: habitFrequency.rawValue,
-                                               note: habitNote, noOfDays: noOfDays, isNotify: isNotify) {
+                            viewModel.addHabit(
+                                name: habitName,
+                                icon: habitIcon,
+                                priorityColor: colorData as NSObject,
+                                frequency: habitFrequency.rawValue,
+                                note: habitNote,
+                                noOfDays: noOfDays,
+                                isNotify: isNotify
+                            ) {
                                 dismiss()
                             }
+
                         } else {
                             print("error converting color to data")
                         }
@@ -114,7 +126,7 @@ struct AddHabit: View {
             }
         }
     }
-    }
+}
 
 
 #Preview {

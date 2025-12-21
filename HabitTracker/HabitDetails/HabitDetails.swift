@@ -45,26 +45,29 @@ struct HabitDetails: View {
             }
             .padding(.top, 8)
         }
-        .ignoresSafeArea(edges: .bottom)
-        .navigationBarBackButtonHidden(true)
-        .enableSwipeBack()
-        .id(refreshToggle) // 🔁 Forces view refresh when toggled
+        .navigationTitle(habit.name ?? "Habit")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                backButton
-            }
             ToolbarItem(placement: .principal) {
-                HabitHeaderView(habit: habit)
+                HStack(spacing: 6) {
+                    Text(habit.icon ?? "✨")
+                        .font(.system(size: 22))
+
+                    Text(habit.name ?? "Habit")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.primary)
+                }
             }
+
             ToolbarItem(placement: .topBarTrailing) {
-                Button(action: {
+                Button {
                     showEditHabit = true
-                }) {
+                } label: {
                     Image(systemName: "square.and.pencil")
-                        .imageScale(.large)
                 }
             }
         }
+
         .sheet(isPresented: $showEditHabit, onDismiss: {
             handleHabitChange()
         }) {
@@ -74,10 +77,8 @@ struct HabitDetails: View {
             calculateStreaks()
             saveLastKnownState()
         }
-        .onAppear {
-            saveLastKnownState()
-        }
     }
+
     
     // MARK: - UI Sections
     

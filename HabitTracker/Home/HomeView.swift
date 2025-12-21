@@ -19,7 +19,7 @@ struct HomeView: View {
                 HabitList( dates: $dates)
                 
             }
-            .navigationTitle("")
+            .navigationTitle("Home")
             .navigationBarHidden(true)
             
             .onAppear {
