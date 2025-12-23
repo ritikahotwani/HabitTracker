@@ -10,6 +10,7 @@ import SwiftUI
 struct HabitList: View {
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @Binding var dates: [Date]
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         if viewModel.habits.count == 0{
@@ -46,7 +47,16 @@ struct HabitList: View {
             }
         }
         .listStyle(.plain)
-//        .padding(.horizontal) 
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+
+            let today = Calendar.current.startOfDay(for: Date())
+            let firstDate = Calendar.current.startOfDay(for: dates.first ?? Date())
+
+            if today != firstDate {
+                dates = viewModel.loadRecentDates()
+            }
+        }
         
     }
 }
