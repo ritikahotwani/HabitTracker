@@ -19,6 +19,7 @@ struct EditHabitView: View {
     @State private var habitFrequency: HabitFrequency = .Daily
     @State private var noOfDays: Int = 7
     @State private var selectedColor: Color = .red
+    @State private var habitIcon: String = "✨"
     
     // MARK: - Body
     var body: some View {
@@ -40,7 +41,20 @@ struct EditHabitView: View {
             Section {
                 Toggle("Remind me", isOn: $isNotify)
             }
-            
+            Section {
+                HStack {
+                    Text("Icon")
+                        .foregroundStyle(.primary)
+
+                    Spacer()
+
+                    EmojiTextField(text: $habitIcon)
+                        .id(habitIcon)  
+                        .frame(width: 44, height: 44)
+                        .background(Color.gray.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
             Section {
                 ZStack(alignment: .topLeading) {
                     if habitNote.isEmpty {
@@ -89,6 +103,7 @@ struct EditHabitView: View {
     private func populateExistingData() {
         habitName = habit.name ?? ""
         habitNote = habit.note ?? ""
+        habitIcon = (habit.icon?.isEmpty == false) ? habit.icon! : "✨"
         isNotify = habit.isNotify?.boolValue ?? true
         noOfDays = habit.noOfDays?.intValue ?? 7
         habitFrequency = HabitFrequency(rawValue: habit.frequency ?? "Daily") ?? .Daily
@@ -104,6 +119,7 @@ struct EditHabitView: View {
         if let colorData = selectedColor.toData() {
             habit.name = habitName
             habit.note = habitNote
+            habit.icon = habitIcon
             habit.isNotify = NSNumber(value: isNotify)
             habit.noOfDays = NSNumber(value: noOfDays)
             habit.priorityColor = colorData as NSObject

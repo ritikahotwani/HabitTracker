@@ -19,7 +19,12 @@ struct EmojiTextField: UIViewRepresentable {
         return textField
     }
 
-    func updateUIView(_ uiView: UITextField, context: Context) {}
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+    }
+
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
