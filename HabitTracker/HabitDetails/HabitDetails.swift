@@ -39,12 +39,16 @@ struct HabitDetails: View {
                 
                 CalendarHeatMap(habit: habit)
                 MonthlyProgress(habit: habit)
+                    .id(habit.noOfDays ?? 0)
                 WeeklyProgress(habit: habit)
+                    .id(habit.noOfDays ?? 0)
+
                 HabitStartView(habit: habit)
                     .padding(.bottom)
             }
             .padding(.top, 8)
         }
+        .id(refreshToggle)
         .navigationTitle(habit.name ?? "Habit")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

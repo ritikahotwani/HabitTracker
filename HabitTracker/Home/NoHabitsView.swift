@@ -29,7 +29,7 @@ struct NoHabitsView: View {
                     .padding(.vertical, 12)
                     .padding(.horizontal, 20)
                     .background(
-                        AppGradient.purpleMauve
+                        AppGradient.lightpurple
                         .clipShape(RoundedRectangle(cornerRadius: 14))
                     )
             }

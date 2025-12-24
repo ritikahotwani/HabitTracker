@@ -15,7 +15,7 @@ struct HabitTrackerApp: App {
 
     @StateObject var appState = AppState()
     @StateObject var viewModel = HabitTrackerViewModel()
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("appTheme") private var appTheme: AppTheme = .system
     @Environment(\.scenePhase) private var scenePhase
     let viewContext = PersistenceController.shared.container.viewContext
 
@@ -29,8 +29,7 @@ struct HabitTrackerApp: App {
                 .environmentObject(appState)
                 .environmentObject(viewModel)
                 .environment(\.managedObjectContext, viewContext)
-                .environment(\.colorScheme, isDarkMode ? .dark : .light)
-
+                .preferredColorScheme(resolvedColorScheme)
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
@@ -39,6 +38,16 @@ struct HabitTrackerApp: App {
             }
         }
     }
+    private var resolvedColorScheme: ColorScheme? {
+          switch appTheme {
+          case .system:
+              return nil
+          case .light:
+              return .light
+          case .dark:
+              return .dark
+          }
+      }
 
     // MARK: - Fetch All Habits
     private func fetchAllHabits(context: NSManagedObjectContext) -> [Habit] {

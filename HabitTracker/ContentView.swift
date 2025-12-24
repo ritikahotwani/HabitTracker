@@ -5,11 +5,15 @@
 //  Created by Ritika Hotwani on 13/08/25.
 //
 import SwiftUI
+enum AppTheme: String {
+    case system
+    case light
+    case dark
+}
 
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var viewModel: HabitTrackerViewModel
-    @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
         Group {
@@ -19,7 +23,6 @@ struct ContentView: View {
                 Onboarding()
             }
         }
-        .preferredColorScheme(isDarkMode ? .dark : .light)
         .animation(.easeInOut, value: appState.isLoggedIn)
     }
 }

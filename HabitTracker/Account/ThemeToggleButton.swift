@@ -8,26 +8,31 @@
 import SwiftUI
 
 struct ThemeToggleButton: View {
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("appTheme") private var appTheme: AppTheme = .system
+    @Environment(\.colorScheme) var systemScheme
+
+    private var isDark: Bool {
+        switch appTheme {
+        case .dark:
+            return true
+        case .light:
+            return false
+        case .system:
+            return systemScheme == .dark
+        }
+    }
 
     var body: some View {
         Button {
-            
-                isDarkMode.toggle()
-
+            appTheme = isDark ? .light : .dark
         } label: {
-            Image(systemName: isDarkMode ? "moon.fill" : "sun.max.fill")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(isDarkMode ? .yellow : .orange)
-                .frame(width: 28, height: 28)
-                .background(
-                    Circle()
-                        .fill(isDarkMode ? Color.black.opacity(0.2) : Color.white.opacity(0.6))
-                )
+            Image(systemName: isDark ? "moon.fill" : "sun.max.fill")
+                .foregroundColor(isDark ? .yellow : .orange)
         }
-        .buttonStyle(.plain)     
+        .buttonStyle(.plain)
     }
 }
+
 
 
 #Preview {

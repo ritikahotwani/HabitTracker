@@ -18,7 +18,7 @@ struct ColorPickerView: View {
                     vibrate(style: .soft)
                 }){
                     ZStack {
-                        if selectedColor == color {
+                        if selectedColor.toUIColor().isEqual(color.toUIColor()) {
                             Circle()
                                 .stroke(color, lineWidth: 4)
                                 .frame(width: 40, height: 40)

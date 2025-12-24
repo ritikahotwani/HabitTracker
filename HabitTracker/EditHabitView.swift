@@ -26,12 +26,12 @@ struct EditHabitView: View {
         NavigationStack{
         Form {
             Section {
-                TextField("Enter Habit Name", text: $habitName)
+                TextField("Enter habit name", text: $habitName)
                     .focused($nameFieldIsFocused)
             }
             
             Section {
-                Picker("Number of Days", selection: $noOfDays) {
+                Picker("Number of days", selection: $noOfDays) {
                     ForEach(1...7, id: \.self) { i in
                         Text("\(i) days a week")
                     }
@@ -43,7 +43,7 @@ struct EditHabitView: View {
             }
             Section {
                 HStack {
-                    Text("Icon")
+                    Text("Select a habit icon")
                         .foregroundStyle(.primary)
 
                     Spacer()
@@ -51,7 +51,7 @@ struct EditHabitView: View {
                     EmojiTextField(text: $habitIcon)
                         .id(habitIcon)  
                         .frame(width: 44, height: 44)
-                        .background(Color.gray.opacity(0.15))
+                        .background(Color.gray.opacity(0.05))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
@@ -124,8 +124,8 @@ struct EditHabitView: View {
             habit.noOfDays = NSNumber(value: noOfDays)
             habit.priorityColor = colorData as NSObject
             habit.frequency = habitFrequency.rawValue
-            
             viewModel.saveContext()
+            habit.objectWillChange.send()
             vibrate(style: .light)
             dismiss()
         } else {

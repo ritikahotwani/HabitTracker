@@ -9,21 +9,28 @@ import SwiftUI
 
 struct AccountView: View {
     @State var showFeatureRequest = false
-    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("appTheme") private var appTheme: AppTheme = .system
+
 
     var body: some View {
         VStack(spacing: 20) {
             ProfileView()
 
             List {
-                Section("Preferences") {
-                    appearanceRow(title: "Light Mode", isSelected: !isDarkMode) {
-                        isDarkMode = false
+                Section("Appearance") {
+                    appearanceRow(title: "System", isSelected: appTheme == .system) {
+                        appTheme = .system
                     }
-                    appearanceRow(title: "Dark Mode", isSelected: isDarkMode) {
-                        isDarkMode = true
+
+                    appearanceRow(title: "Light", isSelected: appTheme == .light) {
+                        appTheme = .light
+                    }
+
+                    appearanceRow(title: "Dark", isSelected: appTheme == .dark) {
+                        appTheme = .dark
                     }
                 }
+
 
                 Section("Feel like something is missing?") {
                     Button {

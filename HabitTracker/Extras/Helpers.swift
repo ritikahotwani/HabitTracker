@@ -7,6 +7,9 @@
 import SwiftUI
 import Foundation
 extension Color {
+    func toUIColor() -> UIColor {
+           UIColor(self)
+       }
     func toData() -> Data? {
         return UIColor(self).encode()
     }
