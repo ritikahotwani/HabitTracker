@@ -60,19 +60,20 @@ struct SignInForm: View {
                         .frame(maxWidth: .infinity)
                 }
             }
+            .listRowSeparator(.hidden)
             .buttonStyle(PrimaryButtonStyle())
             .disabled(isFormInvalid || isLoading)
-            Button{
+            Button {
                 presentFPView = true
-            }
-            label:{
-                    Text("Forgot Password?")
-                        .frame(maxWidth: .infinity)
-                
+            } label: {
+                Text("Forgot Password?")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-        
+            .frame(maxWidth: .infinity, alignment: .center)
         }
+
         .listRowBackground(Color.clear)
         
         .scrollContentBackground(.hidden)

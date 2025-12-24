@@ -78,7 +78,7 @@ struct ForgotPasswordView: View {
                 userEmail = ""
             }
         } message: {
-            Text("If this email exists, you'll receive a reset link shortly.")
+            Text("A password reset link will be sent shortly. Please check your spam folder if you don’t see it.")
         }
     }
 

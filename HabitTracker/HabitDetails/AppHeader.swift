@@ -15,7 +15,7 @@ struct AppHeader: View {
             
             Text("Build better habits everyday.")
                 .font(.headline)
-                .foregroundStyle(AppGradient.purpleMauve)
+                .foregroundStyle(AppGradient.lightpurple)
         }
         .padding(.horizontal)
     }
