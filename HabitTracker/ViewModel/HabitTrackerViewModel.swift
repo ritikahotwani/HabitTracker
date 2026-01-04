@@ -120,11 +120,16 @@ class HabitTrackerViewModel: ObservableObject {
 
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             
-            if let error = error {
-                self.authError = error.localizedDescription
+            if let error = error as NSError? {
+                if error.code == AuthErrorCode.userNotFound.rawValue {
+                    self.authError = "Account no longer exists. Please sign up again."
+                } else {
+                    self.authError = error.localizedDescription
+                }
                 completion(false)
                 return
             }
+
 
             guard let firebaseUser = result?.user else {
                 self.authError = "User not found"
@@ -165,6 +170,30 @@ class HabitTrackerViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    // MARK: - Validate Firebase Session
+    func validateAuthSession() {
+        guard let user = Auth.auth().currentUser else {
+            signOutSilently()
+            return
+        }
+
+        user.reload { error in
+            DispatchQueue.main.async {
+                if error != nil {
+                    self.signOutSilently()
+                }
+            }
+        }
+    }
+
+
+
+    private func signOutSilently() {
+        clearLoggedInUser()
+        habits = []
+        currentUser = nil
     }
 
     
@@ -342,6 +371,59 @@ class HabitTrackerViewModel: ObservableObject {
         // After any changes, update the combined notification
         NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
     }
+
+    // MARK: - Delete Account (Permanent)
+    func deleteAccount(completion: @escaping (Bool) -> Void = { _ in }) {
+
+        guard let firebaseUser = Auth.auth().currentUser,
+              let localUser = currentUser else {
+            authError = "User not found"
+            completion(false)
+            return
+        }
+
+        // 1️⃣ FIRST: Delete Firebase user
+        firebaseUser.delete { error in
+            DispatchQueue.main.async {
+
+                if let error = error {
+                    self.authError = error.localizedDescription
+                    completion(false)
+                    return
+                }
+
+                // 2️⃣ Cancel all notifications
+                NotificationManager.shared.cancelAllNotifications()
+
+                // 3️⃣ Delete habits
+                let habitRequest = Habit.fetchRequest()
+                habitRequest.predicate = NSPredicate(format: "user == %@", localUser)
+
+                if let userHabits = try? self.context.fetch(habitRequest) {
+                    userHabits.forEach { self.context.delete($0) }
+                }
+
+                // 4️⃣ Delete user entity
+                self.context.delete(localUser)
+
+                // 5️⃣ Save Core Data
+                guard self.saveContext() else {
+                    self.authError = "Failed to delete local data"
+                    completion(false)
+                    return
+                }
+
+                // 6️⃣ Clear app state
+                self.clearLoggedInUser()
+                self.habits = []
+                self.currentUser = nil
+                self.authError = nil
+
+                completion(true)
+            }
+        }
+    }
+
 
     
     // MARK: - Private Save

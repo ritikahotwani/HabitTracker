@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 import UserNotifications
-
+import FirebaseAuth
 @main
 struct HabitTrackerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -31,12 +31,16 @@ struct HabitTrackerApp: App {
                 .environment(\.managedObjectContext, viewContext)
                 .preferredColorScheme(resolvedColorScheme)
         }
-        .onChange(of: scenePhase) { phase in
-            if phase == .active {
+        
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
                 let habits = fetchAllHabits(context: viewContext)
                 resetWeeklyProgressIfNeeded(viewContext: viewContext, habits: habits)
             }
         }
+       
+
+        
     }
     private var resolvedColorScheme: ColorScheme? {
           switch appTheme {

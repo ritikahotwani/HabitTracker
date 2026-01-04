@@ -9,9 +9,13 @@ import SwiftUI
 
 struct AccountView: View {
     @State var showFeatureRequest = false
+    @State private var showDeleteAlert = false
+    @State private var showDeleteErrorAlert = false
+
     @AppStorage("appTheme") private var appTheme: AppTheme = .system
-
-
+    @EnvironmentObject var viewModel: HabitTrackerViewModel
+    @EnvironmentObject var appState: AppState
+    
     var body: some View {
         VStack(spacing: 20) {
             ProfileView()
@@ -44,6 +48,16 @@ struct AccountView: View {
                 Section("Account") {
                     LogOutButton()
                 }
+                // MARK: - Danger Zone
+                Section {
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                    } label: {
+                        Text("Delete Account")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .fontWeight(.medium)
+                    }
+                }
             }
             .scrollContentBackground(.hidden)
         }
@@ -55,6 +69,36 @@ struct AccountView: View {
         .navigationDestination(isPresented: $showFeatureRequest) {
             FeatureRequestView()
         }
+        // MARK: - Delete Alert
+               .alert("Delete Account?", isPresented: $showDeleteAlert) {
+                   Button("Delete", role: .destructive) {
+                       viewModel.deleteAccount { success in
+                              if success {
+                                  appState.isLoggedIn = false
+                              }
+                          }
+                   }
+                   Button("Cancel", role: .cancel) {
+                       // auto dismiss
+                   }
+               } message: {
+                   Text("This action is permanent and cannot be undone.")
+               }
+               .onChange(of: viewModel.authError) { error in
+                   if error != nil {
+                       showDeleteErrorAlert = true
+                   }
+               }
+               .alert("Unable to Delete Account",
+                      isPresented: $showDeleteErrorAlert) {
+
+                   Button("OK", role: .cancel) {}
+
+               } message: {
+                   Text("For security reasons, please log in again to delete your account.")
+               }
+
+
     }
 }
 

@@ -24,6 +24,20 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut, value: appState.isLoggedIn)
+        .alert(
+            "Session Ended",
+            isPresented: Binding(
+                get: { appState.sessionMessage != nil },
+                set: { _ in appState.sessionMessage = nil }
+            )
+        ) {
+            Button("OK", role: .cancel) {
+                appState.sessionMessage = nil
+            }
+        } message: {
+            Text(appState.sessionMessage ?? "")
+        }
     }
 }
+
 
