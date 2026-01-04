@@ -24,6 +24,16 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut, value: appState.isLoggedIn)
+        .alert("Session Expired", isPresented: $viewModel.showSessionExpiredAlert) {
+            Button("OK", role: .cancel) {
+                if viewModel.signOut() {
+                    appState.isLoggedIn = false
+                }
+                viewModel.showSessionExpiredAlert = false
+            }
+        } message: {
+            Text("Please log in again.")
+        }
     }
 }
 

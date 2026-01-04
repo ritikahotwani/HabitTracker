@@ -17,7 +17,9 @@ struct AddHabit: View {
     @State private var noOfDays: Int = 7
     @State private var habitIcon: String = "✨"
     @State private var selectedColor: Color = .red
-    
+    @State private var showAuthAlert = false
+    @EnvironmentObject var appState: AppState
+
     var body: some View {
         NavigationStack {
             
@@ -84,23 +86,17 @@ struct AddHabit: View {
             .onAppear{
                 nameFieldIsFocused = true
             }
-            
+            .onChange(of: viewModel.authError) { _, newValue in
+                if newValue != nil {
+                    showAuthAlert = true
+                }
+            }
+
             .navigationBarBackButtonHidden(true)
             .navigationTitle("Create Habit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar{
-//                ToolbarItem(placement: .topBarLeading){
-//                    Button(action: {
-//                        dismiss()
-//                    }){
-//                        Image(systemName: "chevron.left")
-//                            .foregroundColor(.black)
-//                    }
-//                }
-//                ToolbarItem(placement: .principal){
-//                    Text("Create Habit")
-//                        .font(.headline)
-//                }
+
                 ToolbarItem(placement: .topBarTrailing){
                     Button("Save"){
                         if let colorData = selectedColor.toData() {
@@ -125,7 +121,16 @@ struct AddHabit: View {
                     
                 }
             }
+        }.alert("Session Expired", isPresented: $showAuthAlert) {
+            Button("OK") {
+                if viewModel.signOut() {
+                    appState.isLoggedIn = false
+                }
+            }
+        } message: {
+            Text(viewModel.authError ?? "")
         }
+
     }
 }
 

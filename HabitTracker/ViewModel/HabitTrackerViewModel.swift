@@ -14,6 +14,7 @@ class HabitTrackerViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var authError: String?
     @Published var resetPasswordSuccess: Bool = false
+    @Published var showSessionExpiredAlert: Bool = false
 
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
@@ -50,6 +51,15 @@ class HabitTrackerViewModel: ObservableObject {
     func clearLoggedInUser() {
         currentUser = nil
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
+    }
+
+    // MARK: - Session Check
+    func checkSession() -> Bool {
+        if currentUser == nil {
+            showSessionExpiredAlert = true
+            return false
+        }
+        return true
     }
 
 
@@ -192,11 +202,8 @@ class HabitTrackerViewModel: ObservableObject {
                   noOfDays: Int,
                   isNotify: Bool,
                   completion: (() -> Void)? = nil) {
-        
-        guard let user = currentUser else {
-            authError = "No user logged in"
-            return
-        }
+      guard checkSession(), let user = currentUser else { return }
+
         self.authError = nil
         let habit = Habit(context: context)
         habit.user = user
@@ -235,6 +242,8 @@ class HabitTrackerViewModel: ObservableObject {
                    isNotify: Bool,
                    completion: (() -> Void)? = nil) {
         
+        guard checkSession() else { return }
+        
         habit.name = name
         habit.priorityColor = priorityColor
         habit.frequency = frequency
@@ -256,6 +265,7 @@ class HabitTrackerViewModel: ObservableObject {
     }
     
     func deleteHabit(offsets: IndexSet) {
+        guard checkSession() else { return }
         offsets.forEach { index in
             let habit = habits[index]
             NotificationManager.shared.cancelReminder(for: habit)
@@ -268,6 +278,7 @@ class HabitTrackerViewModel: ObservableObject {
 
     
     func toggleHabitCompletion(habit: Habit, date: Date) {
+        guard checkSession() else { return }
         guard habit.id != nil else { return }
 
         var currentDates = habit.completedDatesArray
