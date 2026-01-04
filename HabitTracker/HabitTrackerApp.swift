@@ -35,6 +35,7 @@ struct HabitTrackerApp: App {
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 viewModel.resetWeeklyProgressIfNeeded()
+                viewModel.validateAuthSession()
             }
         }
        

@@ -12,6 +12,7 @@ import FirebaseAuth
 class AppState: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var sessionMessage: String?
+    @Published var isSessionLoading: Bool = true
 
     private var authListener: AuthStateDidChangeListenerHandle?
 
@@ -19,11 +20,16 @@ class AppState: ObservableObject {
         authListener = Auth.auth().addStateDidChangeListener { _, user in
             DispatchQueue.main.async {
                 if user == nil {
-                    self.sessionMessage = "Your session has expired. Please log in again."
+                    // Only show session expired message if we were previously logged in or it's not the initial load? 
+                    // For now, keep original logic but handle loading state.
+                    if self.isLoggedIn {
+                         self.sessionMessage = "Your session has expired. Please log in again."
+                    }
                     self.isLoggedIn = false
                 } else {
                     self.isLoggedIn = true
                 }
+                self.isSessionLoading = false
             }
         }
     }

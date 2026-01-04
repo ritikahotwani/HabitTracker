@@ -36,7 +36,6 @@
 		9E528F402E8C189500FCCE91 /* CalendarHeatMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F3F2E8C189500FCCE91 /* CalendarHeatMap.swift */; };
 		9E528F422E8C197800FCCE91 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F412E8C197800FCCE91 /* HomeView.swift */; };
 		9E528F442E8C1D7000FCCE91 /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F432E8C1D7000FCCE91 /* AuthenticationService.swift */; };
-		9E528F482E8C22BD00FCCE91 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F472E8C22BD00FCCE91 /* Test.swift */; };
 		9E528F4A2E8C299C00FCCE91 /* DateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F492E8C299C00FCCE91 /* DateFormatter.swift */; };
 		9E528F4C2E8C2AD300FCCE91 /* HabitHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F4B2E8C2AD300FCCE91 /* HabitHeaderView.swift */; };
 		9E528F4E2E8C2D6600FCCE91 /* HabitCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E528F4D2E8C2D6600FCCE91 /* HabitCheckBox.swift */; };
@@ -127,7 +126,6 @@
 		9E528F3F2E8C189500FCCE91 /* CalendarHeatMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarHeatMap.swift; sourceTree = "<group>"; };
 		9E528F412E8C197800FCCE91 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		9E528F432E8C1D7000FCCE91 /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
-		9E528F472E8C22BD00FCCE91 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		9E528F492E8C299C00FCCE91 /* DateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatter.swift; sourceTree = "<group>"; };
 		9E528F4B2E8C2AD300FCCE91 /* HabitHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitHeaderView.swift; sourceTree = "<group>"; };
 		9E528F4D2E8C2D6600FCCE91 /* HabitCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCheckBox.swift; sourceTree = "<group>"; };
@@ -340,7 +338,6 @@
 				9E528F2C2E8C01A200FCCE91 /* Onboarding */,
 				9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */,
 				9E5109642ECA24E900A32416 /* GoogleService-Info.plist */,
-				9E528F472E8C22BD00FCCE91 /* Test.swift */,
 				9E645C942E9ABF7700487B8D /* AppDelegate.swift */,
 				9EF0C8562E8BF8F400B01A3C /* ContentView.swift */,
 				9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */,
@@ -566,7 +563,6 @@
 				9E528F302E8C01BC00FCCE91 /* SignUpForm.swift in Sources */,
 				9E528F512E8C2DD300FCCE91 /* LogOutButton.swift in Sources */,
 				9E528F3E2E8C183800FCCE91 /* Habit+Extension.swift in Sources */,
-				9E528F482E8C22BD00FCCE91 /* Test.swift in Sources */,
 				9EFD81F22ED9DF970023C93E /* FeatureRequestView.swift in Sources */,
 				9EF0C8572E8BF8F400B01A3C /* ContentView.swift in Sources */,
 				9EF0C8552E8BF8F400B01A3C /* HabitTrackerApp.swift in Sources */,

@@ -33,7 +33,36 @@ struct MonthlyProgress: View {
                 
                 Spacer()
                 
-                MonthPicker(monthSelected: $monthSelected)
+                HStack(spacing: 16) {
+                    MonthPicker(monthSelected: $monthSelected)
+                    
+                    HStack(spacing: 8) {
+                        Button {
+                            withAnimation { currentYear -= 1 }
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                        }
+                        
+                        Text("\(String(currentYear))")
+                            .font(.subheadline)
+                            .monospacedDigit()
+                        
+                        Button {
+                            withAnimation { currentYear += 1 }
+                        } label: {
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .fontWeight(.bold)
+                        }
+                    }
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+                }
             }
             
             if let progressData = progressForSelectedMonth {

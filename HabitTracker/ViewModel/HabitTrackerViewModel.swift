@@ -15,6 +15,7 @@ class HabitTrackerViewModel: ObservableObject {
     @Published var authError: String?
     @Published var resetPasswordSuccess: Bool = false
     @Published var showSessionExpiredAlert: Bool = false
+    @Published var showAccountDeletedAlert: Bool = false
 
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
@@ -69,13 +70,13 @@ class HabitTrackerViewModel: ObservableObject {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             
             if let error = error {
-                self.authError = error.localizedDescription
+                self.authError = self.mapAuthError(error)
                 completion(false)
                 return
             }
             
             guard let firebaseUser = result?.user else {
-                self.authError = "User creation failed"
+                self.authError = "User creation failed. Please try again."
                 completion(false)
                 return
             }
@@ -85,21 +86,10 @@ class HabitTrackerViewModel: ObservableObject {
             change.displayName = name
             change.commitChanges(completion: nil)
 
-            // Save to Core Data
-//            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
-            if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
-                // already exists → don’t create again
-                self.setLoggedInUser(localUser)
-            } else {
-                // create for the first time
-                self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
-                if let newUser = self.fetchLocalUser(by: firebaseUser.uid) {
-                    self.setLoggedInUser(newUser)
-                }
-            }
-
-
-            // Fetch local user & set logged in
+            // Save to Core Data (Idempotent)
+            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+            
+            // Set logged in user
             if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
                 self.setLoggedInUser(localUser)
             }
@@ -110,10 +100,19 @@ class HabitTrackerViewModel: ObservableObject {
 
     // MARK: - Save User Locally
     private func saveUserLocally(uid: String, email: String, name: String) {
-        let localUser = User(context: context)
-        localUser.userId = uid
-        localUser.userEmail = email
-        localUser.userName = name
+        // Check if user already exists
+        if let existingUser = fetchLocalUser(by: uid) {
+            // Update existing user
+            existingUser.userEmail = email
+            existingUser.userName = name
+        } else {
+            // Create new user
+            let newUser = User(context: context)
+            newUser.userId = uid
+            newUser.userEmail = email
+            newUser.userName = name
+        }
+        
         try? context.save()
     }
 
@@ -130,12 +129,8 @@ class HabitTrackerViewModel: ObservableObject {
 
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             
-            if let error = error as NSError? {
-                if error.code == AuthErrorCode.userNotFound.rawValue {
-                    self.authError = "Account no longer exists. Please sign up again."
-                } else {
-                    self.authError = error.localizedDescription
-                }
+            if let error = error {
+               self.authError = self.mapAuthError(error)
                 completion(false)
                 return
             }
@@ -149,15 +144,15 @@ class HabitTrackerViewModel: ObservableObject {
             self.authError = nil
             let name = firebaseUser.displayName ?? ""
 
-            // Save/update local user
+            // Sync user data to Core Data
             self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
 
-            // Fetch from Core Data
+            // Set Logged In User
             if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
                 self.setLoggedInUser(localUser)
+                self.fetchHabits()
             }
-
-            self.fetchHabits()
+            
             completion(true)
         }
     }
@@ -172,7 +167,7 @@ class HabitTrackerViewModel: ObservableObject {
         Auth.auth().sendPasswordReset(withEmail: email) { error in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.authError = error.localizedDescription
+                    self.authError = self.mapAuthError(error)
                     self.resetPasswordSuccess = false
                 } else {
                     self.authError = nil
@@ -185,14 +180,22 @@ class HabitTrackerViewModel: ObservableObject {
     // MARK: - Validate Firebase Session
     func validateAuthSession() {
         guard let user = Auth.auth().currentUser else {
-            signOutSilently()
+            // No user logged in?
             return
         }
 
         user.reload { error in
             DispatchQueue.main.async {
-                if error != nil {
-                    self.signOutSilently()
+                if let error = error as NSError? {
+                    // Check for specific errors
+                    if error.code == AuthErrorCode.userNotFound.rawValue ||
+                       error.code == AuthErrorCode.userTokenExpired.rawValue ||
+                       error.code == AuthErrorCode.userDisabled.rawValue {
+                         
+                        // Instead of silent sign out, show alert
+                        self.showAccountDeletedAlert = true
+                    }
+                    print("Session validation failed: \(error.localizedDescription)")
                 }
             }
         }
@@ -233,6 +236,14 @@ class HabitTrackerViewModel: ObservableObject {
                   completion: (() -> Void)? = nil) {
       guard checkSession(), let user = currentUser else { return }
 
+      // Validation
+      guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+      if habits.count >= 50 {
+          self.authError = "You have reached the maximum limit of 50 habits."
+          return
+      }
+
+        validateAuthSession()
         self.authError = nil
         let habit = Habit(context: context)
         habit.user = user
@@ -272,6 +283,7 @@ class HabitTrackerViewModel: ObservableObject {
                    completion: (() -> Void)? = nil) {
         
         guard checkSession() else { return }
+        validateAuthSession()
         
         habit.name = name
         habit.priorityColor = priorityColor
@@ -295,6 +307,8 @@ class HabitTrackerViewModel: ObservableObject {
     
     func deleteHabit(offsets: IndexSet) {
         guard checkSession() else { return }
+        validateAuthSession()
+
         offsets.forEach { index in
             let habit = habits[index]
             NotificationManager.shared.cancelReminder(for: habit)
@@ -308,6 +322,8 @@ class HabitTrackerViewModel: ObservableObject {
     
     func toggleHabitCompletion(habit: Habit, date: Date) {
         guard checkSession() else { return }
+        validateAuthSession()
+
         guard habit.id != nil else { return }
 
         var currentDates = habit.completedDatesArray
@@ -398,7 +414,7 @@ class HabitTrackerViewModel: ObservableObject {
             DispatchQueue.main.async {
 
                 if let error = error {
-                    self.authError = error.localizedDescription
+                    self.authError = self.mapAuthError(error)
                     completion(false)
                     return
                 }
@@ -437,6 +453,30 @@ class HabitTrackerViewModel: ObservableObject {
 
 
     
+    // MARK: - Map Auth Error
+    private func mapAuthError(_ error: Error) -> String {
+        let nsError = error as NSError
+        
+        switch nsError.code {
+        case AuthErrorCode.wrongPassword.rawValue:
+            return "Incorrect password. Please try again."
+        case AuthErrorCode.userNotFound.rawValue:
+            return "No account found with this email."
+        case AuthErrorCode.emailAlreadyInUse.rawValue:
+            return "This email is already in use. Please sign in instead."
+        case AuthErrorCode.invalidEmail.rawValue:
+            return "The email address is badly formatted."
+        case AuthErrorCode.weakPassword.rawValue:
+            return "Password should be at least 6 characters."
+        case AuthErrorCode.networkError.rawValue:
+            return "Network connection error. Please check your internet."
+        case AuthErrorCode.requiresRecentLogin.rawValue:
+            return "For security reasons, please log in again to delete your account."
+        default:
+            return error.localizedDescription
+        }
+    }
+
     // MARK: - Private Save
     @discardableResult
      func saveContext() -> Bool {
@@ -447,7 +487,7 @@ class HabitTrackerViewModel: ObservableObject {
             authError = nil
             return true
         } catch {
-            authError = "Failed to save: \(error.localizedDescription)"
+            authError = "Unable to save changes. Please try again."
             print(error.localizedDescription)
             return false
         }

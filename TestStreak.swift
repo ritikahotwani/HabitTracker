@@ -1,47 +1,4 @@
-//
-//  Helpers.swift
-//  HabitTracker
-//
-//  Created by Ritika Hotwani on 13/08/25.
-//
-import SwiftUI
 import Foundation
-extension Color {
-    func toUIColor() -> UIColor {
-           UIColor(self)
-       }
-    func toData() -> Data? {
-        return UIColor(self).encode()
-    }
-    
-    static func fromData(_ data: Data) -> Color? {
-        guard let uiColor = UIColor.decode(data: data) else { return nil }
-        return Color(uiColor)
-    }
-}
-extension UIColor {
-    func encode() -> Data? {
-        try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
-    }
-
-    static func decode(data: Data) -> UIColor? {
-        try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data)
-    }
-}
-
-extension UISegmentedControl {
-    static func setAppearance() {
-        let appearance = UISegmentedControl.appearance()
-        appearance.selectedSegmentTintColor = UIColor.black
-        appearance.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
-        appearance.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .normal)
-    }
-}
-
-func vibrate(style: UIImpactFeedbackGenerator.FeedbackStyle = .light) {
-    let generator = UIImpactFeedbackGenerator(style: style)
-    generator.impactOccurred()
-}
 
 func calculateStreaks(from datesCompleted: [Date]) -> (currentStreak: Int, bestStreak: Int) {
     let calendar = Calendar.current
@@ -81,7 +38,12 @@ func calculateStreaks(from datesCompleted: [Date]) -> (currentStreak: Int, bestS
 
     // Calculate current streak
     var todayStreak = 0
-    let today = calendar.startOfDay(for: Date())
+    // Mock "Today" as Jan 1, 2025
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    let mockToday = dateFormatter.date(from: "2025-01-01")!
+    
+    let today = calendar.startOfDay(for: mockToday)
     
     // Check if streak is active (Today OR Yesterday must be present)
     var checkDate = today
@@ -91,7 +53,6 @@ func calculateStreaks(from datesCompleted: [Date]) -> (currentStreak: Int, bestS
            normalizedDates.contains(yesterday) {
             checkDate = yesterday
         } else {
-            // Streak broken
             return (currentStreak: 0, bestStreak: bestStreak)
         }
     }
@@ -105,9 +66,23 @@ func calculateStreaks(from datesCompleted: [Date]) -> (currentStreak: Int, bestS
 
     return (currentStreak: todayStreak, bestStreak: bestStreak)
 }
-extension Calendar {
-    func isDate(_ date: Date, inCurrentWeekFor referenceDate: Date = Date()) -> Bool {
-        guard let weekInterval = self.dateInterval(of: .weekOfYear, for: referenceDate) else { return false }
-        return weekInterval.contains(date)
-    }
+
+// Test Case
+// Dec 31 2024 is DONE. Jan 1 2025 (Today) is NOT done.
+// Expected Current Streak: 1 (from Dec 31)
+let dateFormatter = DateFormatter()
+dateFormatter.dateFormat = "yyyy-MM-dd"
+let dec31 = dateFormatter.date(from: "2024-12-31")!
+// Jan 1 is NOT in the list
+
+let dates = [dec31]
+let result = calculateStreaks(from: dates)
+
+print("Dates: \(dates)")
+print("Result: Current=\(result.currentStreak), Best=\(result.bestStreak)")
+
+if result.currentStreak == 1 {
+    print("SUCCESS: Streak persisted from yesterday!")
+} else {
+    print("FAILURE: Streak reset to \(result.currentStreak)")
 }

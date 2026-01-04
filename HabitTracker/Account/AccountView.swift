@@ -58,6 +58,21 @@ struct AccountView: View {
                             .fontWeight(.medium)
                     }
                 }
+                
+                Section {
+                    // Empty section for spacing
+                } footer: {
+                    VStack(spacing: 4) {
+                        Text("Data is stored locally on this device. Deleting the app will remove your habits.")
+                            .multilineTextAlignment(.center)
+                        
+                        Text("v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 10)
+                }
             }
             .scrollContentBackground(.hidden)
         }
@@ -81,9 +96,11 @@ struct AccountView: View {
                    Button("Cancel", role: .cancel) {
                        // auto dismiss
                    }
-               } message: {
-                   Text("This action is permanent and cannot be undone.")
-               }
+               } message:
+                   {
+                                  Text("This will permanently delete your account and all habits stored on this device. This cannot be undone.")
+                              }
+               
                .onChange(of: viewModel.authError) { error in
                    if error != nil {
                        showDeleteErrorAlert = true
