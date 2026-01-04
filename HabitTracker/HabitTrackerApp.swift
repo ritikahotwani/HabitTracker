@@ -31,11 +31,10 @@ struct HabitTrackerApp: App {
                 .environment(\.managedObjectContext, viewContext)
                 .preferredColorScheme(resolvedColorScheme)
         }
-        
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                let habits = fetchAllHabits(context: viewContext)
-                resetWeeklyProgressIfNeeded(viewContext: viewContext, habits: habits)
+
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                viewModel.resetWeeklyProgressIfNeeded()
             }
         }
        
@@ -52,50 +51,6 @@ struct HabitTrackerApp: App {
               return .dark
           }
       }
-
-    // MARK: - Fetch All Habits
-    private func fetchAllHabits(context: NSManagedObjectContext) -> [Habit] {
-        let request: NSFetchRequest<Habit> = Habit.fetchRequest()
-        do {
-            return try context.fetch(request)
-        } catch {
-            print("❌ Error fetching habits:", error)
-            return []
-        }
-    }
-
-    // MARK: - Weekly Reset + Notifications
-    private func resetWeeklyProgressIfNeeded(viewContext: NSManagedObjectContext, habits: [Habit]) {
-        var habitsChanged = false
-
-        for habit in habits {
-            if let lastWeekStart = habit.weeklyProgress?.start {
-                if !Calendar.current.isDate(lastWeekStart, inCurrentWeekFor: Date()) {
-                    habit.datesCompleted = [] as NSObject
-                    habitsChanged = true
-                }
-            } else {
-                // New habit without weeklyProgress considered as changed
-                habitsChanged = true
-            }
-        }
-
-        if habitsChanged {
-            do {
-                try viewContext.save()
-                // After weekly reset: schedule streak reminders for each habit
-                for habit in habits {
-                    NotificationManager.shared.scheduleBestStreakReminder(for: habit)
-                }
-                // After everything: re-schedule combined morning notification
-                NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
-
-                print("🔁 Weekly reset + notifications updated")
-            } catch {
-                print("❌ Failed to save weekly reset:", error)
-            }
-        }
-    }
 
 }
 

@@ -17,9 +17,8 @@ struct HabitList: View {
             NoHabitsView()
         }else{
         DateBar(dates: $dates)
-            .listRowInsets(
-                EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
-            )
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
 
         List {
             // ROWS
