@@ -20,7 +20,7 @@ struct OnboardingSegmentController: View {
         }
         .pickerStyle(.segmented)
         
-        .tint(.black)
+        .tint(.primary)
         .padding()
     }
 }

@@ -47,19 +47,19 @@ struct MonthlyProgressBar: View {
             HStack {
                 Text(startDate, formatter: DateFormatter.shortMonthDay)
                     .font(.caption)
-                    .foregroundStyle(habit.habitColor.opacity(0.7))
+                    .foregroundStyle(.secondary)
                 
                 Spacer()
                 
                 Text("\(Int(progress * 100))%")
                     .font(.caption.bold())
-                    .foregroundStyle(habit.habitColor)
+                    .foregroundStyle(.primary)
                 
                 Spacer()
                 
                 Text(endDate, formatter: DateFormatter.shortMonthDay)
                     .font(.caption)
-                    .foregroundStyle(habit.habitColor.opacity(0.7))
+                    .foregroundStyle(.secondary)
             }
         }
     }

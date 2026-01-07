@@ -15,7 +15,7 @@ struct MonthPicker: View {
                 Text(month.rawValue)
             }
         }
-        .tint(.black)
+        .tint(.primary)
     }
 }
 

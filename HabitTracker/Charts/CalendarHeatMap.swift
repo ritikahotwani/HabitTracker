@@ -46,6 +46,7 @@ struct CalendarHeatMap: View {
                     
                     Text("\(calendar.component(.day, from: date))")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundColor(isCompleted ? contrastingTextColor(for: habit.habitColor) : .primary)
                         .frame(maxWidth: .infinity, minHeight: 30)
                         .background(
                             isFuture ? Color.gray.opacity(0.1) :
@@ -56,6 +57,18 @@ struct CalendarHeatMap: View {
             }
         }
         .padding()
+    }
+    private func contrastingTextColor(for color: Color) -> Color {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        
+        UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        // Luminance formula
+        let luminance = 0.299 * r + 0.587 * g + 0.114 * b
+        return luminance > 0.5 ? .black : .white
     }
 }
 
