@@ -57,7 +57,7 @@ struct SignUpForm: View {
                     .inputFieldStyle()
                     .onSubmit { focusedField = .confirmPassword }
                 
-
+                
             } footer: {
                 Text("Must be at least 8 characters with uppercase and number")
                     .font(.caption)
@@ -94,6 +94,13 @@ struct SignUpForm: View {
             }
             .buttonStyle(PrimaryButtonStyle())
             .disabled(isFormInvalid || isLoading)
+            .listRowBackground(Color.clear)
+            
+            Section {
+                GoogleSignInButton {
+                    signInWithGoogle()
+                }
+            }
             .listRowBackground(Color.clear)
         }
         .scrollContentBackground(.hidden)
@@ -160,8 +167,34 @@ struct SignUpForm: View {
                 }
             }
         }
+        
+        
     }
-
+    
+    func signInWithGoogle() {
+       isLoading = true
+       GoogleAuthHelper.signIn { result in
+           switch result {
+           case .success(let credential):
+               viewModel.signInWithGoogle(credential: credential) { success in
+                   DispatchQueue.main.async {
+                       self.isLoading = false
+                       if success {
+                           self.appState.isLoggedIn = true
+                           NotificationManager.shared.showSignInSuccessNotification(for: "Google User")
+                       } else {
+                           self.errorMessage = viewModel.authError ?? "Google Sign In Failed"
+                           self.showError = true
+                       }
+                   }
+               }
+           case .failure(let error):
+               self.isLoading = false
+               self.errorMessage = error.localizedDescription
+               self.showError = true
+           }
+       }
+   }
 }
 
 #Preview {

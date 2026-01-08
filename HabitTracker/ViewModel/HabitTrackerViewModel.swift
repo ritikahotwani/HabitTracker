@@ -156,6 +156,38 @@ class HabitTrackerViewModel: ObservableObject {
             completion(true)
         }
     }
+    
+    // MARK: - Google Sign In
+    func signInWithGoogle(credential: AuthCredential, completion: @escaping (Bool) -> Void) {
+        Auth.auth().signIn(with: credential) { result, error in
+            if let error = error {
+                self.authError = self.mapAuthError(error)
+                completion(false)
+                return
+            }
+            
+            guard let firebaseUser = result?.user else {
+                self.authError = "User not found"
+                completion(false)
+                return
+            }
+            
+            self.authError = nil
+            let name = firebaseUser.displayName ?? "Google User"
+            let email = firebaseUser.email ?? ""
+            
+            // Sync user data to Core Data
+            self.saveUserLocally(uid: firebaseUser.uid, email: email, name: name)
+            
+            // Set Logged In User
+            if let localUser = self.fetchLocalUser(by: firebaseUser.uid) {
+                self.setLoggedInUser(localUser)
+                self.fetchHabits()
+            }
+            
+            completion(true)
+        }
+    }
     // MARK: - Forgot Password
     func resetPassword(email: String) {
         guard !email.isEmpty else {

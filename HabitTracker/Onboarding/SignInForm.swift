@@ -72,6 +72,13 @@ struct SignInForm: View {
             }
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity, alignment: .center)
+            
+            Section {
+                GoogleSignInButton {
+                    signInWithGoogle()
+                }
+            }
+            .listRowBackground(Color.clear)
         }
 
         .listRowBackground(Color.clear)
@@ -121,6 +128,31 @@ struct SignInForm: View {
                     self.errorMessage = viewModel.authError ?? "The email or password you entered is incorrect."
                     self.showError = true
                 }
+            }
+        }
+    }
+    
+    private func signInWithGoogle() {
+        isLoading = true
+        GoogleAuthHelper.signIn { result in
+            switch result {
+            case .success(let credential):
+                viewModel.signInWithGoogle(credential: credential) { success in
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        if success {
+                            self.appState.isLoggedIn = true
+                            NotificationManager.shared.showSignInSuccessNotification(for: "Google User")
+                        } else {
+                            self.errorMessage = viewModel.authError ?? "Google Sign In Failed"
+                            self.showError = true
+                        }
+                    }
+                }
+            case .failure(let error):
+                self.isLoading = false
+                self.errorMessage = error.localizedDescription
+                self.showError = true
             }
         }
     }
