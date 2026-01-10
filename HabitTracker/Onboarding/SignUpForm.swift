@@ -17,6 +17,7 @@ struct SignUpForm: View {
     @State private var showError = false
     @State private var errorMessage: String = ""
     @State private var isLoading = false
+    @State private var isGoogleLoading = false
     
     @EnvironmentObject var viewModel: HabitTrackerViewModel
     @EnvironmentObject var appState:AppState
@@ -32,12 +33,14 @@ struct SignUpForm: View {
                     .focused($focusedField, equals: .name)
                     .submitLabel(.next)
                     .inputFieldStyle()
-                    .onAppear{
-                        focusedField = .name
-                    }
+//                    .onAppear{
+//                        focusedField = .name
+//                    }
                     .onSubmit { focusedField = .email }
                 
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
             Section {
                 TextField("Email", text: $userEmail)
@@ -49,6 +52,8 @@ struct SignUpForm: View {
                     .inputFieldStyle()
                     .onSubmit { focusedField = .password }
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
             Section {
                 PasswordField(text: $userPassword, placeholder: "Password")
@@ -58,10 +63,15 @@ struct SignUpForm: View {
                     .onSubmit { focusedField = .confirmPassword }
                 
                 
+                
+            } header: {
+                EmptyView()
             } footer: {
                 Text("Must be at least 8 characters with uppercase and number")
                     .font(.caption)
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
             Section {
                 PasswordField(text: $confirmPassword, placeholder: "Confirm Password")
@@ -81,30 +91,48 @@ struct SignUpForm: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
-            Button(action: signUp) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .frame(maxWidth: .infinity)
-                } else {
-                    Text("Create Account")
-                        .frame(maxWidth: .infinity)
+            Section {
+                VStack(spacing: 12) {
+                    Button(action: signUp) {
+                        if isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Text("Create Account")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(isFormInvalid || isLoading)
+                    
+                    HStack {
+                        VStack { Divider() }
+                        Text("Or")
+                            .foregroundColor(.secondary)
+                            .font(.footnote)
+                        VStack { Divider() }
+                    }
+                    .padding(.vertical, 8)
                 }
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .disabled(isFormInvalid || isLoading)
             .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
             Section {
                 GoogleSignInButton {
+                    vibrate(style: .soft)
                     signInWithGoogle()
                 }
             }
             .listRowBackground(Color.clear)
         }
         .scrollContentBackground(.hidden)
-        .listSectionSpacing(5)
+        .scrollContentBackground(.hidden)
+        .listSectionSpacing(0)
         .alert("Sign Up Error", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -161,6 +189,7 @@ struct SignUpForm: View {
                 
                 if success {
                     self.appState.isLoggedIn = true
+                    NotificationManager.shared.showSignInSuccessNotification(for: name)
                 } else {
                     self.errorMessage = self.viewModel.authError ?? "Failed to create your account."
                     self.showError = true
@@ -172,16 +201,18 @@ struct SignUpForm: View {
     }
     
     func signInWithGoogle() {
-       isLoading = true
+       isGoogleLoading = true
        GoogleAuthHelper.signIn { result in
            switch result {
-           case .success(let credential):
-               viewModel.signInWithGoogle(credential: credential) { success in
+           case .success(let result):
+               let (credential, name) = result
+               viewModel.signInWithGoogle(credential: credential, googleName: name) { success in
                    DispatchQueue.main.async {
-                       self.isLoading = false
+                       self.isGoogleLoading = false
                        if success {
                            self.appState.isLoggedIn = true
-                           NotificationManager.shared.showSignInSuccessNotification(for: "Google User")
+                           let userName = self.viewModel.currentUser?.userName ?? name ?? "User"
+                           NotificationManager.shared.showSignInSuccessNotification(for: userName)
                        } else {
                            self.errorMessage = viewModel.authError ?? "Google Sign In Failed"
                            self.showError = true
@@ -189,7 +220,7 @@ struct SignUpForm: View {
                    }
                }
            case .failure(let error):
-               self.isLoading = false
+               self.isGoogleLoading = false
                self.errorMessage = error.localizedDescription
                self.showError = true
            }

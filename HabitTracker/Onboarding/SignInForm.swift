@@ -15,6 +15,7 @@ struct SignInForm: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var isLoading = false
+    @State private var isGoogleLoading = false
     @State private var presentFPView = false
     
     @EnvironmentObject var viewModel: HabitTrackerViewModel
@@ -32,13 +33,15 @@ struct SignInForm: View {
                     .focused($focusedField, equals: .email)
                     .submitLabel(.next)
                     .inputFieldStyle()
-                    .onAppear{
-                        focusedField = .email
-                    }
+//                    .onAppear{
+//                        focusedField = .email
+//                    }
                     .onSubmit {
                         focusedField = .password
                     }
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
             Section {
                 PasswordField(text: $userPassword, placeholder: "Password")
@@ -49,32 +52,51 @@ struct SignInForm: View {
                         signIn()
                     }
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
             
-            Button(action: signIn) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .frame(maxWidth: .infinity)
-                } else {
-                    Text("Sign In")
-                        .frame(maxWidth: .infinity)
+            Section {
+                VStack(spacing: 12) {
+                    Button(action: signIn) {
+                        if isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Text("Sign In")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(isFormInvalid || isLoading)
+                    
+                    Button {
+                        vibrate(style: .soft)
+                        presentFPView = true
+                    } label: {
+                        Text("Forgot Password?")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    
+                    HStack {
+                        VStack { Divider() }
+                        Text("Or")
+                            .foregroundColor(.secondary)
+                            .font(.footnote)
+                        VStack { Divider() }
+                    }
+                    .padding(.vertical, 8)
                 }
             }
+            .listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
-            .buttonStyle(PrimaryButtonStyle())
-            .disabled(isFormInvalid || isLoading)
-            Button {
-                presentFPView = true
-            } label: {
-                Text("Forgot Password?")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity, alignment: .center)
             
             Section {
                 GoogleSignInButton {
+                    vibrate(style: .soft)
                     signInWithGoogle()
                 }
             }
@@ -84,7 +106,8 @@ struct SignInForm: View {
         .listRowBackground(Color.clear)
         
         .scrollContentBackground(.hidden)
-        .listSectionSpacing(10)
+        .scrollContentBackground(.hidden)
+        .listSectionSpacing(0)
         .alert("Sign In Failed", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -122,7 +145,8 @@ struct SignInForm: View {
                 if success {
                     // ✅ Update app state on success
                     self.appState.isLoggedIn = true
-                    NotificationManager.shared.showSignInSuccessNotification(for: self.userEmail)
+                    let name = self.viewModel.currentUser?.userName ?? "User"
+                    NotificationManager.shared.showSignInSuccessNotification(for: name)
                 } else {
                     // ❌ Show Firebase error message
                     self.errorMessage = viewModel.authError ?? "The email or password you entered is incorrect."
@@ -133,16 +157,18 @@ struct SignInForm: View {
     }
     
     private func signInWithGoogle() {
-        isLoading = true
+        isGoogleLoading = true
         GoogleAuthHelper.signIn { result in
             switch result {
-            case .success(let credential):
-                viewModel.signInWithGoogle(credential: credential) { success in
+            case .success(let result):
+                let (credential, name) = result
+                viewModel.signInWithGoogle(credential: credential, googleName: name) { success in
                     DispatchQueue.main.async {
-                        self.isLoading = false
+                        self.isGoogleLoading = false
                         if success {
                             self.appState.isLoggedIn = true
-                            NotificationManager.shared.showSignInSuccessNotification(for: "Google User")
+                            let userName = self.viewModel.currentUser?.userName ?? name ?? "User"
+                            NotificationManager.shared.showSignInSuccessNotification(for: userName)
                         } else {
                             self.errorMessage = viewModel.authError ?? "Google Sign In Failed"
                             self.showError = true
@@ -150,7 +176,7 @@ struct SignInForm: View {
                     }
                 }
             case .failure(let error):
-                self.isLoading = false
+                self.isGoogleLoading = false
                 self.errorMessage = error.localizedDescription
                 self.showError = true
             }

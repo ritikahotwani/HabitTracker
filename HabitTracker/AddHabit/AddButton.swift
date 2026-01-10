@@ -13,6 +13,7 @@ struct AddButton: View {
 
     var body: some View {
         Button(action: {
+            vibrate(style: .medium)
          showAddHabit = true
         }) {
             Image(systemName: "plus")

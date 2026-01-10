@@ -11,7 +11,7 @@ import FirebaseAuth
 class GoogleAuthHelper {
     
     @MainActor
-    static func signIn(completion: @escaping (Result<AuthCredential, Error>) -> Void) {
+    static func signIn(completion: @escaping (Result<(AuthCredential, String?), Error>) -> Void) {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else {
             completion(.failure(NSError(domain: "GoogleAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not find root view controller"])))
@@ -33,7 +33,8 @@ class GoogleAuthHelper {
             let accessToken = user.accessToken.tokenString
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
                                                            accessToken: accessToken)
-            completion(.success(credential))
+            let name = user.profile?.name
+            completion(.success((credential, name)))
         }
     }
 }

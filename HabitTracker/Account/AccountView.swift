@@ -51,6 +51,7 @@ struct AccountView: View {
                 // MARK: - Danger Zone
                 Section {
                     Button(role: .destructive) {
+                        vibrate(style: .rigid)
                         showDeleteAlert = true
                     } label: {
                         Text("Delete Account")
@@ -87,6 +88,7 @@ struct AccountView: View {
         // MARK: - Delete Alert
                .alert("Delete Account?", isPresented: $showDeleteAlert) {
                    Button("Delete", role: .destructive) {
+                       vibrate(style: .rigid)
                        viewModel.deleteAccount { success in
                               if success {
                                   appState.isLoggedIn = false

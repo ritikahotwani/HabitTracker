@@ -197,10 +197,10 @@ final class NotificationManager {
     }
 
     //  NEW: Trigger a sign-in success notification
-    func showSignInSuccessNotification(for email: String) {
+    func showSignInSuccessNotification(for name: String) {
         let content = UNMutableNotificationContent()
-        content.title = "🎉 Welcome love!"
-        content.body = "You're signed in as \(email). Stay consistent with your habits today!"
+        content.title = "You’re In ✨"
+        content.body = "\(name), consistency looks really good on you."
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)

@@ -13,6 +13,7 @@ struct LogOutButton: View {
 
     var body: some View {
         Button(role: .destructive) {
+            vibrate(style: .medium)
             showAlert = true
         } label: {
             Text("Log Out")
@@ -22,6 +23,7 @@ struct LogOutButton: View {
         .alert("Are you sure you want to log out?", isPresented: $showAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Log Out", role: .destructive) {
+                vibrate(style: .rigid)
                 if viewModel.signOut() {
                     appState.isLoggedIn = false
                 }

@@ -12,6 +12,7 @@ struct ProfileButton: View {
     @Environment(\.colorScheme) var colorScheme
     var body: some View {
         Button(action: {
+            vibrate(style: .medium)
          showAccountPage = true
         }) {
             Image(systemName: "person")

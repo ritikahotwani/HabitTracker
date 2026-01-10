@@ -158,7 +158,7 @@ class HabitTrackerViewModel: ObservableObject {
     }
     
     // MARK: - Google Sign In
-    func signInWithGoogle(credential: AuthCredential, completion: @escaping (Bool) -> Void) {
+    func signInWithGoogle(credential: AuthCredential, googleName: String? = nil, completion: @escaping (Bool) -> Void) {
         Auth.auth().signIn(with: credential) { result, error in
             if let error = error {
                 self.authError = self.mapAuthError(error)
@@ -173,7 +173,18 @@ class HabitTrackerViewModel: ObservableObject {
             }
             
             self.authError = nil
-            let name = firebaseUser.displayName ?? "Google User"
+            
+            // Use existing display name, or the one from Google, or fallback
+            var finalName = firebaseUser.displayName
+            if (finalName == nil || finalName?.isEmpty == true), let gName = googleName {
+                 finalName = gName
+                 // Update Firebase Profile
+                 let change = firebaseUser.createProfileChangeRequest()
+                 change.displayName = gName
+                 change.commitChanges(completion: nil)
+            }
+            
+            let name = finalName ?? "Google User"
             let email = firebaseUser.email ?? ""
             
             // Sync user data to Core Data
