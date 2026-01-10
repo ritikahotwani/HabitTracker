@@ -15,6 +15,7 @@ struct HabitTrackerApp: App {
 
     @StateObject var appState = AppState()
     @StateObject var viewModel = HabitTrackerViewModel()
+    @StateObject var forceUpdateManager = ForceUpdateManager()
     @AppStorage("appTheme") private var appTheme: AppTheme = .system
     @Environment(\.scenePhase) private var scenePhase
     let viewContext = PersistenceController.shared.container.viewContext
@@ -30,12 +31,16 @@ struct HabitTrackerApp: App {
                 .environmentObject(viewModel)
                 .environment(\.managedObjectContext, viewContext)
                 .preferredColorScheme(resolvedColorScheme)
+                .fullScreenCover(isPresented: $forceUpdateManager.isUpdateRequired) {
+                    ForceUpdateView()
+                }
         }
 
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 viewModel.resetWeeklyProgressIfNeeded()
                 viewModel.validateAuthSession()
+                forceUpdateManager.fetchRemoteConfig()
             }
         }
        
