@@ -422,25 +422,7 @@ class HabitTrackerViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Weekly Reset
-    func resetWeeklyProgressIfNeeded() {
-        for habit in habits {
-            if let lastWeekStart = habit.weeklyProgress?.start {
-                if !Calendar.current.isDate(lastWeekStart, inCurrentWeekFor: Date()) {
-                    habit.datesCompleted = [] as NSObject
-                    if saveContext() {
-                        NotificationManager.shared.scheduleBestStreakReminder(for: habit)
-                        print("🔁 Weekly reset for \(habit.name ?? "")")
-                    }
-                }
-            } else {
-                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
-            }
-        }
 
-        // After any changes, update the combined notification
-        NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
-    }
 
     // MARK: - Delete Account (Permanent)
     func deleteAccount(completion: @escaping (Bool) -> Void = { _ in }) {

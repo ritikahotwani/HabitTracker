@@ -10,8 +10,7 @@
 import Foundation
 import SwiftUI
 
-let calendar = Calendar.current
-let today = Date()
+
 extension Habit {
     var habitColor: Color {
         guard let data = priorityColor as? Data else { return .red }
@@ -69,6 +68,8 @@ extension Habit {
     
 
     var weeklyProgress: (start: Date, end: Date, progress: CGFloat)? {
+        let calendar = Calendar.current
+        let today = Date()
         guard let weekStart = calendar.dateInterval(of: .weekOfYear, for: today)?.start else { return nil }
         let weekEnd = calendar.date(byAdding: .day, value: 7, to: weekStart)!
         
@@ -82,6 +83,8 @@ extension Habit {
         return (start: weekStart, end: weekEnd-1, progress: progress)
     }
     var monthlyProgress: (start: Date, end: Date, progress: CGFloat)? {
+        let calendar = Calendar.current
+        let today = Date()
         guard let monthStart = calendar.dateInterval(of: .month, for: today)?.start else { return nil }
         let monthEnd = calendar.date(byAdding: .month, value: 1, to: monthStart)!
         

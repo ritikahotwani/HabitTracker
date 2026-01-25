@@ -46,7 +46,6 @@
 		9E591ECC2EB1229500F4CAF0 /* ThemeToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E591ECB2EB1229500F4CAF0 /* ThemeToggleButton.swift */; };
 		9E645C922E9AB81100487B8D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C912E9AB81100487B8D /* NotificationManager.swift */; };
 		9E645C952E9ABF7700487B8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E645C942E9ABF7700487B8D /* AppDelegate.swift */; };
-		9E743C782EE70F180021C591 /* SwipeBackHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E743C772EE70F180021C591 /* SwipeBackHelper.swift */; };
 		9E9E41382EBCF3D9004ACFEE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9E9E41372EBCF3D9004ACFEE /* FirebaseAuth */; };
 		9E9E413C2EBCF3D9004ACFEE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9E9E413B2EBCF3D9004ACFEE /* FirebaseCore */; };
 		9EA39D552EF24D35005168E8 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA39D542EF24D34005168E8 /* ForgotPasswordView.swift */; };
@@ -141,7 +140,6 @@
 		9E645C912E9AB81100487B8D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		9E645C932E9ABEAC00487B8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9E645C942E9ABF7700487B8D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9E743C772EE70F180021C591 /* SwipeBackHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackHelper.swift; sourceTree = "<group>"; };
 		9EA39D542EF24D34005168E8 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		9EA5B6C92F0F5EB20090C5FF /* GoogleSignInButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignInButton.swift; sourceTree = "<group>"; };
 		9EA5B6CB2F0F5EEF0090C5FF /* GoogleAuthHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthHelper.swift; sourceTree = "<group>"; };
@@ -231,8 +229,10 @@
 				9E528F0E2E8BFF8A00FCCE91 /* Helpers.swift */,
 				9E528F0C2E8BFF5C00FCCE91 /* ButtonViewModifier.swift */,
 				9E528F372E8C14F100FCCE91 /* Enums.swift */,
+				9E528F3B2E8C156900FCCE91 /* DateHelpers.swift */,
 				9E528F492E8C299C00FCCE91 /* DateFormatter.swift */,
 				9EFD81ED2ED95B920023C93E /* AppGradient.swift */,
+				9E528F392E8C152F00FCCE91 /* Validations.swift */,
 			);
 			path = Extras;
 			sourceTree = "<group>";
@@ -250,6 +250,7 @@
 		9E528F1C2E8C002100FCCE91 /* HabitDetails */ = {
 			isa = PBXGroup;
 			children = (
+				9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */,
 				9EF0C8982E8BFB3800B01A3C /* HabitDetails.swift */,
 				9E528F4B2E8C2AD300FCCE91 /* HabitHeaderView.swift */,
 				9E528F2A2E8C017C00FCCE91 /* CountCard.swift */,
@@ -262,7 +263,6 @@
 				9EF0C8942E8BFABD00B01A3C /* CircularProgressView.swift */,
 				9E528F182E8C000100FCCE91 /* MonthlyProgressBar.swift */,
 				9E528F162E8BFFE700FCCE91 /* WeeklyProgress.swift */,
-				9E743C772EE70F180021C591 /* SwipeBackHelper.swift */,
 			);
 			path = HabitDetails;
 			sourceTree = "<group>";
@@ -350,7 +350,6 @@
 				9EF0C8542E8BF8F400B01A3C /* HabitTrackerApp.swift */,
 				9E645C942E9ABF7700487B8D /* AppDelegate.swift */,
 				9EF0C8562E8BF8F400B01A3C /* ContentView.swift */,
-				9EBEFCDB2EACF14F00F7D4DA /* EditHabitView.swift */,
 				9E528F4F2E8C2D8300FCCE91 /* Home */,
 				9EF0C8962E8BFAC900B01A3C /* AppState.swift */,
 				9E528F1F2E8C007700FCCE91 /* AddHabit */,
@@ -393,8 +392,6 @@
 			isa = PBXGroup;
 			children = (
 				9EF0C88B2E8BFA4E00B01A3C /* HabitTrackerViewModel.swift */,
-				9E528F392E8C152F00FCCE91 /* Validations.swift */,
-				9E528F3B2E8C156900FCCE91 /* DateHelpers.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -402,8 +399,8 @@
 		9EFD81E22ED93E6B0023C93E /* Account */ = {
 			isa = PBXGroup;
 			children = (
-				9EFD81E32ED93E7C0023C93E /* AccountView.swift */,
 				9EFD81F12ED9DF970023C93E /* FeatureRequestView.swift */,
+				9EFD81E32ED93E7C0023C93E /* AccountView.swift */,
 				9E591ECB2EB1229500F4CAF0 /* ThemeToggleButton.swift */,
 				9EFD81E52ED93ED10023C93E /* ProfileView.swift */,
 				9E528F502E8C2DD300FCCE91 /* LogOutButton.swift */,
@@ -567,7 +564,6 @@
 				9EF0C88F2E8BFA8900B01A3C /* AddButton.swift in Sources */,
 				9EFD81E62ED93ED10023C93E /* ProfileView.swift in Sources */,
 				9E528F1B2E8C001500FCCE91 /* Monthlyprogress.swift in Sources */,
-				9E743C782EE70F180021C591 /* SwipeBackHelper.swift in Sources */,
 				9E528F442E8C1D7000FCCE91 /* AuthenticationService.swift in Sources */,
 				9EF0C8932E8BFAA900B01A3C /* AppHeader.swift in Sources */,
 				9E528F572E8C2E2700FCCE91 /* HabitName.swift in Sources */,
@@ -771,7 +767,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"HabitTracker/Preview Content\"";
 				DEVELOPMENT_TEAM = Y293576RRL;
 				ENABLE_PREVIEWS = YES;
@@ -787,7 +783,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ritika.HabitTrackerApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -806,7 +802,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"HabitTracker/Preview Content\"";
 				DEVELOPMENT_TEAM = Y293576RRL;
 				ENABLE_PREVIEWS = YES;
@@ -822,7 +818,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = ritika.HabitTrackerApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
