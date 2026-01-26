@@ -15,6 +15,8 @@ struct EditHabitView: View {
     @State private var habitName: String = ""
     @State private var habitNote: String = ""
     @State private var isNotify: Bool = true
+    @State private var isDefaultTime: Bool = true
+    @State private var reminderTime: Date = Calendar.current.date(from: DateComponents(hour: 8, minute: 0)) ?? Date()
     @FocusState private var nameFieldIsFocused: Bool
     @State private var habitFrequency: HabitFrequency = .Daily
     @State private var noOfDays: Int = 7
@@ -38,9 +40,7 @@ struct EditHabitView: View {
                 }
             }
             
-            Section {
-                Toggle("Remind me", isOn: $isNotify)
-            }
+            notificationSection
             Section {
                 HStack {
                     Text("Select a habit icon")
@@ -98,13 +98,26 @@ struct EditHabitView: View {
     }
     }
     
+    private var notificationSection: some View {
+        Section {
+            Toggle("Remind me", isOn: $isNotify)
+            
+            if isNotify {
+                DatePicker("Reminder Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
+            }
+        }
+    }
+    
     // MARK: - Methods
     
     private func populateExistingData() {
         habitName = habit.name ?? ""
         habitNote = habit.note ?? ""
         habitIcon = (habit.icon?.isEmpty == false) ? habit.icon! : "✨"
+        habitIcon = (habit.icon?.isEmpty == false) ? habit.icon! : "✨"
         isNotify = habit.isNotify?.boolValue ?? true
+        isDefaultTime = habit.isDefaultTime?.boolValue ?? true
+        reminderTime = habit.reminderTime ?? Calendar.current.date(from: DateComponents(hour: 8, minute: 0)) ?? Date()
         noOfDays = habit.noOfDays?.intValue ?? 7
         habitFrequency = HabitFrequency(rawValue: habit.frequency ?? "Daily") ?? .Daily
         
@@ -116,11 +129,17 @@ struct EditHabitView: View {
     }
     
     private func saveChanges() {
+        // Infer default time logic
+        let components = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
+        let isDefault = (components.hour == 8 && components.minute == 0)
+
         if let colorData = selectedColor.toData() {
             habit.name = habitName
             habit.note = habitNote
             habit.icon = habitIcon
             habit.isNotify = NSNumber(value: isNotify)
+            habit.isDefaultTime = NSNumber(value: isDefault)
+            habit.reminderTime = reminderTime
             habit.noOfDays = NSNumber(value: noOfDays)
             habit.priorityColor = colorData as NSObject
             habit.frequency = habitFrequency.rawValue

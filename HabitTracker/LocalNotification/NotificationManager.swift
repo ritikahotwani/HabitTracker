@@ -29,9 +29,20 @@ final class NotificationManager {
 
         // Filter habits that:
         // - have notifications enabled
+        // - are set to DEFAULT time (8:00 AM)
         // - have not yet met their weekly goal
+        // - are NOT completed for today
         let pendingHabits: [Habit] = habits.filter { habit in
             guard habit.isNotify?.boolValue ?? true else { return false }
+            
+            // Only include habits with Default Time
+            guard habit.isDefaultTime?.boolValue ?? true else { return false }
+
+            // Check if completed Today
+            let isCompletedToday = habit.completedDatesArray.contains { 
+                Calendar.current.isDateInToday($0) 
+            }
+            if isCompletedToday { return false }
 
             let weeklyGoal = habit.noOfDays?.intValue ?? 7
             let completedCount = habit.completedDatesArray.filter {
@@ -76,31 +87,61 @@ final class NotificationManager {
 
     // MARK: - (Optional) Per-habit Daily Reminder (not used for now)
     // You can keep this for future use, but don't call it if you only want ONE notification.
-    func scheduleDailyReminder(for habit: Habit, at time: DateComponents = defaultTime()) {
+    // MARK: - Custom Daily Reminder (Individual)
+    func scheduleCustomReminder(for habit: Habit, at date: Date) {
         guard let id = habit.id?.uuidString,
               let name = habit.name,
               habit.isNotify?.boolValue ?? true else { return }
 
-        let weeklyGoal = habit.noOfDays?.intValue ?? 7
-        let completedCount = habit.completedDatesArray.filter {
-            Calendar.current.isDate($0, inCurrentWeekFor: Date())
-        }.count
-        guard completedCount < weeklyGoal else { return }
+        // Universal Check: If completed today, do NOT schedule (wait for next sync/tomorrow)
+        let isCompletedToday = habit.completedDatesArray.contains {
+            Calendar.current.isDateInToday($0)
+        }
+        if isCompletedToday {
+            print("✅ \(name) completed today. Skipping custom reminder schedule.")
+            return
+        }
 
         let content = UNMutableNotificationContent()
         content.title = "Habit Reminder 💪"
         content.body = "Time for your habit: \(name)"
         content.sound = .default
 
-        let trigger = UNCalendarNotificationTrigger(dateMatching: time, repeats: true)
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        
+        // Use habit ID as identifier so we can cancel it individually
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("❌ Error scheduling daily reminder:", error.localizedDescription)
+                print("❌ Error scheduling custom reminder for \(name):", error.localizedDescription)
             } else {
-                print("🔔 Daily reminder scheduled for \(name)")
+                print("🔔 Custom reminder scheduled for \(name) at \(components.hour ?? 0):\(components.minute ?? 0)")
             }
+        }
+    }
+    
+    // MARK: - Reschedule All (App Launch / Scene Phase)
+    func rescheduleAllNotifications(for habits: [Habit]) {
+        // 1. Schedule Combined (it handles its own filtering)
+        scheduleCombinedMorningNotification(for: habits)
+        
+        // 2. Schedule Weekly Consistency
+        scheduleWeeklyConsistencyNotification(for: habits)
+        
+        // 3. Schedule Custom Reminders
+        let customHabits = habits.filter { habit in
+            let isDefault = habit.isDefaultTime?.boolValue ?? true
+            return !isDefault
+        }
+        
+        for habit in customHabits {
+             // Cancel first to ensure clean state? 
+             // Or primarily relied on identifying by ID replacing existing one.
+             if let reminderTime = habit.reminderTime {
+                 scheduleCustomReminder(for: habit, at: reminderTime)
+             }
         }
     }
 
@@ -113,6 +154,12 @@ final class NotificationManager {
         let completedCount = habit.completedDatesArray.filter {
             Calendar.current.isDate($0, inCurrentWeekFor: Date())
         }.count
+        
+        // Universal Check: If completed today, don't nag.
+        let isCompletedToday = habit.completedDatesArray.contains {
+            Calendar.current.isDateInToday($0)
+        }
+        if isCompletedToday { return }
 
         let daysRemaining = weeklyGoal - completedCount
 
@@ -156,12 +203,74 @@ final class NotificationManager {
 
 
 
+    // MARK: - Weekly Consistency Reminder (Sunday 10 PM)
+    func scheduleWeeklyConsistencyNotification(for habits: [Habit]) {
+        // 1. Calculate completions for current week
+        var habitsWithCounts: [(habit: Habit, count: Int)] = []
+        
+        for habit in habits {
+            let count = habit.weeklyCompletedCount
+            if count > 0 {
+                habitsWithCounts.append((habit, count))
+            }
+        }
+        
+        // 2. Find max
+        guard let maxCount = habitsWithCounts.map({ $0.count }).max(), maxCount > 0 else {
+            // No habits completed this week? Cancel any existing weekly reminder
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["weeklyConsistency"])
+            return
+        }
+        
+        // 3. Find winners
+        let winners = habitsWithCounts.filter { $0.count == maxCount }
+        let winnerNames = winners.compactMap { $0.habit.name }
+        
+        guard !winnerNames.isEmpty else { return }
+        
+        // 4. Content
+        let content = UNMutableNotificationContent()
+        content.title = "Habit you showed up for the most 💪"
+        
+        let joinedNames = winnerNames.joined(separator: ", ")
+        content.body = "You crushed it this week with: \(joinedNames)!"
+        content.sound = .default
+        
+        // 5. Trigger: Last day of the active week at 10:00 PM
+        // Logic: If week starts on Sunday (1), last day is Saturday (7).
+        // If week starts on Monday (2), last day is Sunday (1).
+        // Formula: (firstWeekday + 5) % 7 + 1
+        let firstWeekday = Calendar.current.firstWeekday
+        let lastWeekday = (firstWeekday + 5) % 7 + 1
+        
+        var dateComponents = DateComponents()
+        dateComponents.weekday = lastWeekday
+        dateComponents.hour = 22   // 10 PM
+        dateComponents.minute = 0
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        
+        let request = UNNotificationRequest(
+            identifier: "weeklyConsistency",
+            content: content,
+            trigger: trigger
+        )
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ Weekly consistency error:", error.localizedDescription)
+            } else {
+                print("🏆 Weekly consistency check set for week day \(lastWeekday) at 10PM. Likely winners: \(joinedNames)")
+            }
+        }
+    }
+
     // MARK: - Cancel Reminders for a Habit
     func cancelReminder(for habit: Habit) {
         guard let id = habit.id?.uuidString else { return }
         UNUserNotificationCenter.current()
             .removePendingNotificationRequests(withIdentifiers: [id, "\(id)_streak"])
-        print("🗑️ Cancelled all reminders for \(habit.name ?? "")")
+        print("🗑️ Cancelled reminders for \(habit.name ?? "")")
     }
     
     // MARK: - Cancel ALL Notifications (used on logout)

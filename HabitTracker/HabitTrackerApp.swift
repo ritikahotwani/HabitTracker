@@ -36,6 +36,7 @@ struct HabitTrackerApp: App {
             if phase == .active {
 
                 viewModel.validateAuthSession()
+                NotificationManager.shared.rescheduleAllNotifications(for: viewModel.habits)
             }
         }
        

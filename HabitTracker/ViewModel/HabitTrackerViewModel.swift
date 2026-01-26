@@ -276,6 +276,8 @@ class HabitTrackerViewModel: ObservableObject {
                   note: String,
                   noOfDays: Int,
                   isNotify: Bool,
+                  reminderTime: Date? = nil,
+                  isDefaultTime: Bool = true,
                   completion: (() -> Void)? = nil) {
       guard checkSession(), let user = currentUser else { return }
 
@@ -300,6 +302,8 @@ class HabitTrackerViewModel: ObservableObject {
         habit.note = note
         habit.noOfDays = NSNumber(value: noOfDays)
         habit.isNotify = NSNumber(value: isNotify)
+        habit.reminderTime = reminderTime
+        habit.isDefaultTime = NSNumber(value: isDefaultTime)
         
         if saveContext() {
             if isNotify {
@@ -308,8 +312,17 @@ class HabitTrackerViewModel: ObservableObject {
             } else {
                 NotificationManager.shared.cancelReminder(for: habit)
             }
+            
+            // Schedule custom reminder if not using default time
+            if isNotify && !isDefaultTime, let reminderTime = reminderTime {
+                 NotificationManager.shared.scheduleCustomReminder(for: habit, at: reminderTime)
+            }
+
             // Recreate the ONE combined morning notification using updated habits list
             NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+            
+            // Re-schedule weekly consistency notification
+            NotificationManager.shared.scheduleWeeklyConsistencyNotification(for: habits)
 
             completion?()
         }
@@ -323,6 +336,8 @@ class HabitTrackerViewModel: ObservableObject {
                    note: String,
                    noOfDays: Int,
                    isNotify: Bool,
+                   reminderTime: Date? = nil,
+                   isDefaultTime: Bool = true,
                    completion: (() -> Void)? = nil) {
         
         guard checkSession() else { return }
@@ -334,6 +349,8 @@ class HabitTrackerViewModel: ObservableObject {
         habit.note = note
         habit.noOfDays = NSNumber(value: noOfDays)
         habit.isNotify = NSNumber(value: isNotify)
+        habit.reminderTime = reminderTime
+        habit.isDefaultTime = NSNumber(value: isDefaultTime)
         
         if saveContext() {
             if isNotify {
@@ -341,8 +358,14 @@ class HabitTrackerViewModel: ObservableObject {
             } else {
                 NotificationManager.shared.cancelReminder(for: habit)
             }
+            
+            // Schedule custom reminder if not using default time
+            if isNotify && !isDefaultTime, let reminderTime = reminderTime {
+                 NotificationManager.shared.scheduleCustomReminder(for: habit, at: reminderTime)
+            }
 
             NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+            NotificationManager.shared.scheduleWeeklyConsistencyNotification(for: habits)
             completion?()
         }
 
@@ -359,6 +382,7 @@ class HabitTrackerViewModel: ObservableObject {
         }
         if saveContext() {
             NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+            NotificationManager.shared.scheduleWeeklyConsistencyNotification(for: habits)
         }
     }
 
@@ -386,13 +410,34 @@ class HabitTrackerViewModel: ObservableObject {
                 Calendar.current.isDate($0, inCurrentWeekFor: Date())
             }.count
 
-            if completedCountThisWeek >= weeklyGoal {
-                NotificationManager.shared.cancelReminder(for: habit)
-                print("✅ Weekly goal met for \(habit.name ?? ""). Cancelling evening streak reminder.")
-            } else {
-                NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+            let isCompletedToday = habit.completedDatesArray.contains {
+                Calendar.current.isDateInToday($0)
             }
+
+            if isCompletedToday {
+                // Universal Rule: If completed, NO alerts.
+                // Cancel custom reminder specifically
+                NotificationManager.shared.cancelReminder(for: habit)
+                
+                // Note: scheduleCombinedMorningNotification below will automatically EXCLUDE this habit
+            } else {
+                // If NOT completed today (meaning we unchecked it):
+                // 1. Restore Custom Reminder if applicable
+                if !(habit.isDefaultTime?.boolValue ?? true), let reminderTime = habit.reminderTime {
+                    NotificationManager.shared.scheduleCustomReminder(for: habit, at: reminderTime)
+                }
+                
+                // 2. Restore Streak Reminder if applicable (not met weekly goal)
+                if completedCountThisWeek < weeklyGoal {
+                     NotificationManager.shared.scheduleBestStreakReminder(for: habit)
+                }
+            }
+            
+            // Always update combined/grouped notification
             NotificationManager.shared.scheduleCombinedMorningNotification(for: habits)
+            
+            // Re-schedule weekly consistency notification (since completions changed)
+            NotificationManager.shared.scheduleWeeklyConsistencyNotification(for: habits)
         }
     }
 

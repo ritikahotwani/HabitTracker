@@ -12,6 +12,8 @@
         <attribute name="priorityColor" optional="YES" attributeType="Transformable"/>
         <attribute name="progress" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="reminderTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isDefaultTime" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="habits" inverseEntity="User"/>
     </entity>
