@@ -8,6 +8,7 @@ import Foundation
 import SwiftUI
 import CoreData
 import FirebaseAuth
+import WidgetKit
 class HabitTrackerViewModel: ObservableObject {
     
     @Published var habits: [Habit] = []
@@ -555,6 +556,8 @@ class HabitTrackerViewModel: ObservableObject {
             try context.save()
             fetchHabits()
             authError = nil
+            // Reload all widgets when data changes
+            WidgetCenter.shared.reloadAllTimelines()
             return true
         } catch {
             authError = "Unable to save changes. Please try again."
