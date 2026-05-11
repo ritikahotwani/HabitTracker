@@ -52,6 +52,8 @@ struct PersistenceController {
         
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        // Always fetch fresh data from the store — critical for cross-process writes (widget)
+        container.viewContext.stalenessInterval = 0
     }
     
     // Test case

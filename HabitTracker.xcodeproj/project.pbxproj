@@ -93,6 +93,7 @@
 		9EFD81EC2ED947B70023C93E /* NoHabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD81EB2ED947B70023C93E /* NoHabitsView.swift */; };
 		9EFD81EE2ED95B920023C93E /* AppGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD81ED2ED95B920023C93E /* AppGradient.swift */; };
 		9EFD81F22ED9DF970023C93E /* FeatureRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFD81F12ED9DF970023C93E /* FeatureRequestView.swift */; };
+		BB528F4F2E8C2D8400FCCE91 /* WidgetHabitPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB528F4F2E8C2D8300FCCE91 /* WidgetHabitPickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -212,6 +213,7 @@
 		9EFD81EB2ED947B70023C93E /* NoHabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoHabitsView.swift; sourceTree = "<group>"; };
 		9EFD81ED2ED95B920023C93E /* AppGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGradient.swift; sourceTree = "<group>"; };
 		9EFD81F12ED9DF970023C93E /* FeatureRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureRequestView.swift; sourceTree = "<group>"; };
+		BB528F4F2E8C2D8300FCCE91 /* WidgetHabitPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetHabitPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -366,6 +368,7 @@
 				9E528F522E8C2DED00FCCE91 /* HeaderView.swift */,
 				9EFD81E02ED93C510023C93E /* ProfileButton.swift */,
 				9EFD81EB2ED947B70023C93E /* NoHabitsView.swift */,
+				BB528F4F2E8C2D8300FCCE91 /* WidgetHabitPickerView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -692,6 +695,7 @@
 				9EF0C8932E8BFAA900B01A3C /* AppHeader.swift in Sources */,
 				9E528F572E8C2E2700FCCE91 /* HabitName.swift in Sources */,
 				9E528F422E8C197800FCCE91 /* HomeView.swift in Sources */,
+				BB528F4F2E8C2D8400FCCE91 /* WidgetHabitPickerView.swift in Sources */,
 				9E528F592E8C2E3A00FCCE91 /* HabitRow.swift in Sources */,
 				9E528F302E8C01BC00FCCE91 /* SignUpForm.swift in Sources */,
 				9E528F512E8C2DD300FCCE91 /* LogOutButton.swift in Sources */,
