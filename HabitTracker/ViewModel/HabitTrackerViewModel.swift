@@ -20,11 +20,51 @@ class HabitTrackerViewModel: ObservableObject {
 
     private let context: NSManagedObjectContext
     private let userDefaultsKey = "loggedInUserId"
+    // Key written to the App Group suite so the widget extension can determine auth state
+    private let widgetUserIdKey = "widget_logged_in_user_id"
+    private let appGroupSuite = "group.com.ritikahotwani.HabitTracker"
 
     // MARK: - Init
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
         restoreLoggedInUser()
+        observeRemoteStoreChanges()
+    }
+
+    // MARK: - Store Change Observers
+    private var refreshWorkItem: DispatchWorkItem?
+
+    private func observeRemoteStoreChanges() {
+        // Fired when the widget (another process) writes to the shared SQLite store
+        NotificationCenter.default.addObserver(
+            forName: .NSPersistentStoreRemoteChange,
+            object: PersistenceController.shared.container.persistentStoreCoordinator,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleRefresh()
+        }
+
+        // Fired when app returns to foreground — catches changes missed while suspended
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleRefresh()
+        }
+    }
+
+    // Debounced refresh: collapses rapid back-to-back notifications into one fetch
+    private func scheduleRefresh() {
+        refreshWorkItem?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            // viewContext is main-thread — no context.perform needed
+            self.context.refreshAllObjects()
+            self.fetchHabits()
+        }
+        refreshWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: item)
     }
 
     // MARK: - Restore User
@@ -37,6 +77,8 @@ class HabitTrackerViewModel: ObservableObject {
 
         if let user = try? context.fetch(request).first {
             currentUser = user
+            // Keep App Group in sync on app launch (handles app updates / reinstalls)
+            UserDefaults(suiteName: appGroupSuite)?.set(uid, forKey: widgetUserIdKey)
             fetchHabits()
         }
     }
@@ -46,13 +88,18 @@ class HabitTrackerViewModel: ObservableObject {
         currentUser = user
         if let uid = user.userId {
             UserDefaults.standard.set(uid, forKey: userDefaultsKey)
+            // Sync to App Group so the widget extension can determine auth state
+            UserDefaults(suiteName: appGroupSuite)?.set(uid, forKey: widgetUserIdKey)
         }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - Clear User
     func clearLoggedInUser() {
         currentUser = nil
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
+        UserDefaults(suiteName: appGroupSuite)?.removeObject(forKey: widgetUserIdKey)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - Session Check

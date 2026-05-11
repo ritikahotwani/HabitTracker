@@ -13,6 +13,10 @@ class AppState: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var sessionMessage: String?
     @Published var isSessionLoading: Bool = true
+    @Published var showWidgetHabitPicker: Bool = false
+    @Published var showAddHabit: Bool = false
+    @Published var navigateToHome: Bool = false
+    @Published var deepLinkHabitID: UUID? = nil
 
     private var authListener: AuthStateDidChangeListenerHandle?
 

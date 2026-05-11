@@ -1,114 +1,172 @@
 import SwiftUI
 import WidgetKit
 import AppIntents
+import UIKit
 
 struct HabitWidgetEntryView: View {
     var entry: HabitEntry
-    
+    @Environment(\.widgetFamily) var family
+
+    var habitColor: Color {
+        guard let data = entry.habitColorData,
+              let uiColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data) else {
+            return .accentColor
+        }
+        return Color(uiColor)
+    }
+
     var body: some View {
-        VStack {
+        Group {
             if !entry.isValid {
                 emptyStateView
+            } else if family == .systemMedium {
+                mediumView
             } else {
-                activeHabitView
+                smallView
             }
         }
         .containerBackground(for: .widget) {
             Color(.systemBackground)
         }
+        // Only open the app when no habit is selected yet
+        .widgetURL(
+            entry.isValid
+                ? URL(string: "habittracker://habit-details/\(entry.habitID?.uuidString ?? "")")
+                : URL(string: "habittracker://select-habit")
+        )
     }
-    
-    var emptyStateView: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "plus.circle.dashed")
-                .font(.largeTitle)
-                .foregroundColor(.secondary)
-            Text(entry.habitID == nil ? "Create a habit\nto start your streak 🌱" : "This habit is\nno longer available.")
-                .font(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-        }
-    }
-    
-    var activeHabitView: some View {
+
+    // MARK: - Small (155×155)
+    var smallView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header: Name and Streak
-            HStack(alignment: .top) {
+
+            // Header row
+            HStack(alignment: .center, spacing: 4) {
+                if !entry.habitIcon.isEmpty {
+                    Text(entry.habitIcon)
+                        .font(.system(size: 13))
+                }
                 Text(entry.habitName)
-                    .font(.headline)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.8)
-                    .foregroundColor(.primary)
-                
+                    .font(.system(size: 12, weight: .semibold))
+                    .lineLimit(1)
+                    .foregroundStyle(.primary)
+
+                Spacer(minLength: 4)
+
+                if entry.streakCount > 0 {
+                    HStack(spacing: 2) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.orange)
+                        Text("\(entry.streakCount)")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.primary)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Color.orange.opacity(0.12))
+                    .clipShape(Capsule())
+                }
+            }
+
+            Spacer()
+
+            // Circle button — fixed size, centered
+            HStack {
                 Spacer()
-                
+                checkCircle(size: 60)
+                Spacer()
+            }
+
+            Spacer()
+
+            // Footer
+            Text(entry.isCompleted ? "Done for today! 🔥" : "Tap to complete")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(entry.isCompleted ? habitColor : .secondary)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(14)
+    }
+
+    // MARK: - Medium (329×155)
+    var mediumView: some View {
+        HStack(spacing: 16) {
+
+            // Left: habit info
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 6) {
+                    if !entry.habitIcon.isEmpty {
+                        Text(entry.habitIcon)
+                            .font(.system(size: 26))
+                    }
+                    Text(entry.habitName)
+                        .font(.system(size: 16, weight: .semibold))
+                        .lineLimit(2)
+                        .foregroundStyle(.primary)
+                }
+
                 if entry.streakCount > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
-                            .foregroundColor(.orange)
-                            .font(.caption2)
-                        Text("\(entry.streakCount)")
-                            .font(.caption.bold())
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.orange.opacity(0.1))
-                    .cornerRadius(8)
-                }
-            }
-            .padding(.bottom, 4)
-            
-            Spacer()
-            
-            // Large Interaction Area
-            Button(intent: ToggleHabitIntent(habitID: entry.habitID ?? UUID())) {
-                ZStack {
-                    if entry.isCompleted {
-                        // Completed State
-                        Circle()
-                            .fill(Color.green.opacity(0.15))
-                        
-                        Image(systemName: "checkmark.circle.fill")
-                           .font(.system(size: 40))
-                           .foregroundColor(.green)
-                            
-                    } else {
-                        // Incomplete State
-                        Circle()
-                            .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
-                            .background(Circle().fill(Color.accentColor.opacity(0.05)))
-                        
-                        Image(systemName: "circle")
-                            .font(.system(size: 40))
-                            .foregroundColor(.accentColor)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.orange)
+                        Text("\(entry.streakCount) day streak")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
                     }
                 }
+
+                Spacer()
+
+                Text(entry.isCompleted ? "Done for today! 🔥" : "One small step today.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(entry.isCompleted ? habitColor : .secondary)
             }
-            .buttonStyle(.plain)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .contentShape(Circle()) // Ensures touch target is the circle
-            
+
             Spacer()
-            
-            // Footer: Motivational Copy
-            HStack {
-                Spacer()
-                Text(motivationalText)
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .foregroundColor(entry.isCompleted ? .green : .secondary)
-                    .multilineTextAlignment(.center)
-                Spacer()
-            }
+
+            // Right: circle button
+            checkCircle(size: 68)
         }
+        .padding(16)
     }
-    
-    var motivationalText: String {
-        if entry.isCompleted {
-            return "Done for today! 🔥"
-        } else {
-            return "One small step today."
+
+    // MARK: - Reusable Circle Button
+    @ViewBuilder
+    func checkCircle(size: CGFloat) -> some View {
+        Button(intent: ToggleHabitIntent(habitID: entry.habitID ?? UUID())) {
+            ZStack {
+                Circle()
+                    .fill(entry.isCompleted
+                          ? habitColor.opacity(0.15)
+                          : Color(.tertiarySystemFill))
+                Circle()
+                    .strokeBorder(
+                        entry.isCompleted ? habitColor : Color(.separator),
+                        lineWidth: 2
+                    )
+                Image(systemName: entry.isCompleted ? "checkmark" : "circle")
+                    .font(.system(size: size * 0.36, weight: .semibold))
+                    .foregroundStyle(entry.isCompleted ? habitColor : Color(.tertiaryLabel))
+            }
+            .frame(width: size, height: size)
         }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Empty State
+    var emptyStateView: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "plus.circle.dashed")
+                .font(.system(size: 28))
+                .foregroundStyle(.secondary)
+            Text(entry.habitID == nil ? "Select a habit\nto track" : "Habit\nunavailable")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(14)
     }
 }
