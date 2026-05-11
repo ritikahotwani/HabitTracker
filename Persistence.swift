@@ -18,16 +18,28 @@ struct PersistenceController {
 
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+             // Configure App Group for shared storage between App and Widget
+             let appGroupID = "group.com.ritikahotwani.HabitTracker"
+             if let storeURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?.appendingPathComponent("HabitTracker.sqlite") {
+                 let description = NSPersistentStoreDescription(url: storeURL)
+                 
+                 // Required for Core Data history tracking (useful for widget updates)
+                 description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+                 description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+                 
+                 container.persistentStoreDescriptions = [description]
+             } else {
+                 print("WARNING: App Group container not found. Falling back to default store. Ensure App Groups capability is enabled with ID: \(appGroupID)")
+                 // Fallback to default, but ensure options are set
+                 if let description = container.persistentStoreDescriptions.first {
+                     description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+                     description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+                 }
+             }
         }
         
-        // Performance optimizations
-        guard let description = container.persistentStoreDescriptions.first else {
-            fatalError("Failed to retrieve a persistent store description.")
-        }
-        
-        description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-        description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-        
+        // Load stores
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
                 #if DEBUG
@@ -40,6 +52,8 @@ struct PersistenceController {
         
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        // Always fetch fresh data from the store — critical for cross-process writes (widget)
+        container.viewContext.stalenessInterval = 0
     }
     
     // Test case

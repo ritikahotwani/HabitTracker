@@ -30,6 +30,24 @@ struct HabitTrackerApp: App {
                 .environmentObject(viewModel)
                 .environment(\.managedObjectContext, viewContext)
                 .preferredColorScheme(resolvedColorScheme)
+                .onOpenURL { url in
+                    guard url.scheme == "habittracker" else { return }
+                    switch url.host {
+                    case "select-habit":
+                        appState.showWidgetHabitPicker = true
+                    case "add-habit":
+                        appState.showAddHabit = true
+                    case "home":
+                        appState.navigateToHome = true
+                    case "habit-details":
+                        if let uuidString = url.pathComponents.last,
+                           let uuid = UUID(uuidString: uuidString) {
+                            appState.deepLinkHabitID = uuid
+                        }
+                    default:
+                        break
+                    }
+                }
         }
 
         .onChange(of: scenePhase) { phase in
