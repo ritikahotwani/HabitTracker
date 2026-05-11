@@ -3,3 +3,6 @@ xcuserdata/
 *.xcuserstate
 *.xcbkptlist
 .DS_Store
+
+# Build output
+build/
